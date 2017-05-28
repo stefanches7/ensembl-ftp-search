@@ -3,3 +3,5 @@ task hello {
 		println 'Hello World!'
 	}
 }
+task assemble {
+}
