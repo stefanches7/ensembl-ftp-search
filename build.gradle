@@ -5,3 +5,5 @@ task hello {
 }
 task assemble {
 }
+task check {
+}
