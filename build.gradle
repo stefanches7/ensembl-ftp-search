@@ -1,9 +1,42 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.3.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+
 task hello {
 	doLast {
 		println 'Hello World!'
 	}
 }
+
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
 task assemble {
+	doLast {
+		println 'Assemble task ended.'
+	}
 }
 task check {
+	doLast {
+		println 'Check task ended.'
+	}
+}
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	compile('org.springframework:spring-context:4.3.8.RELEASE')
 }
