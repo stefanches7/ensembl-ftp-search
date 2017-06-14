@@ -2,7 +2,6 @@ package ebi.ensembl.ftpsearchapi;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -10,6 +9,7 @@ import java.net.URL;
 
 @Entity
 public class Link {
+
     @Id
     @GeneratedValue
     @JsonIgnore
@@ -30,23 +30,23 @@ public class Link {
         return linkUrl;
     }
 
+    public void setLinkUrl(final URL linkUrl) {
+        this.linkUrl = linkUrl;
+    }
+
     public String getOrganismName() {
         return organismName;
+    }
+
+    public void setOrganismName(final String organismName) {
+        this.organismName = organismName;
     }
 
     public String getFileType() {
         return fileType;
     }
 
-    public void setLinkUrl(URL linkUrl) {
-        this.linkUrl = linkUrl;
-    }
-
-    public void setOrganismName(String organismName) {
-        this.organismName = organismName;
-    }
-
-    public void setFileType(String fileType) {
+    public void setFileType(final String fileType) {
         this.fileType = fileType;
     }
 }

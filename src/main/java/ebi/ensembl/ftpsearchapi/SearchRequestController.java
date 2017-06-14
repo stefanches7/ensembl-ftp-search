@@ -1,6 +1,7 @@
 package ebi.ensembl.ftpsearchapi;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -8,44 +9,56 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 public class SearchRequestController {
 
-    @Autowired
-    private LinkRepository linkRepository;
+    private final LinkRepository linkRepository;
 
-    @RequestMapping("/search")
-    public @ResponseBody List<String> search(@RequestParam(name="${organism_name_param}", required=false) String organism_name) {
-        return null;
+    private final Environment env;
+
+    @Autowired
+    public SearchRequestController(final LinkRepository linkRepository, final Environment env) {
+        this.linkRepository = linkRepository;
+        this.env = env;
     }
 
-    //DEBUG
+    @RequestMapping("/search")
+    public @ResponseBody
+    Set<SearchFilter> search(@RequestParam final Map<String, String> paramMap) {
+        final Set<SearchFilter> searchFilters = new HashSet<>();
+        for (final Map.Entry<String, String> filterEntry : paramMap.entrySet()) {
+            searchFilters.add(new SearchFilter(filterEntry.getKey(), filterEntry.getValue()));
+        }
+        return searchFilters;
+    }
+
+    //FIXME: refactor to be used by update job only/delete!
     @RequestMapping("/addNew")
-    public String addNew(@RequestParam(name="${organism_name_param}", required=true) String organism_name,
-                         @RequestParam(name="${file_type_param}", required=false) String fileType, @RequestParam
-                                     (name="${link_url_param}", required=false) String linkAdress) {
-        Link ftpLink = new Link();
+    public String addNew(@RequestParam final Map<String, String> paramMap) {
+        final Link ftpLink = new Link();
         try {
-            ftpLink.setLinkUrl(new URL(linkAdress));
-        } catch (MalformedURLException e) {
+            ftpLink.setLinkUrl(new URL(paramMap.get("link_url")));
+        } catch (final MalformedURLException e) {
             return "Specified url is not valid. Please, retry your request.";
         }
-        ftpLink.setFileType(fileType);
-        ftpLink.setOrganismName(organism_name);
+        ftpLink.setFileType(paramMap.get("file_type"));
+        ftpLink.setOrganismName(paramMap.get("organism_name"));
         linkRepository.save(ftpLink);
-        return "Sucessfully written.";
+        return "Successfully written.";
     }
 
     @RequestMapping("/getAll")
-    public @ResponseBody Iterable<Link> findAll() {
+    public @ResponseBody
+    Iterable<Link> findAll() {
         return linkRepository.findAll();
     }
 
     @RequestMapping("/hello")
-    public String helloWorld() {
-        return "Hello World!";
+    private String helloWorld() {
+        return env.getProperty("hello_content");
     }
 }
