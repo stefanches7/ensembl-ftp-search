@@ -2,6 +2,7 @@ package ebi.ensembl.ftpsearchapi;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -9,9 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 public class SearchRequestController {
@@ -28,12 +28,13 @@ public class SearchRequestController {
 
     @RequestMapping("/search")
     public @ResponseBody
-    Set<SearchFilter> search(@RequestParam final Map<String, String> paramMap) {
-        final Set<SearchFilter> searchFilters = new HashSet<>();
+    List<Link> search(@RequestParam final Map<String, String> paramMap) {
+        final LinkSpecificationsIntersector filtersIntersector = new LinkSpecificationsIntersector();
         for (final Map.Entry<String, String> filterEntry : paramMap.entrySet()) {
-            searchFilters.add(new SearchFilter(filterEntry.getKey(), filterEntry.getValue()));
+            filtersIntersector.with(new SearchFilter(filterEntry.getKey(), filterEntry.getValue()));
         }
-        return searchFilters;
+        final Specification<Link> producedSpec = filtersIntersector.produce();
+        return linkRepository.findAll(producedSpec);
     }
 
     //FIXME: refactor to be used by update job only/delete!

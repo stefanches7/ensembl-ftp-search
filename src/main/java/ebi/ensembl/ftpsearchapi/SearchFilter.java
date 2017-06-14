@@ -7,13 +7,21 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class SearchFilter {
 
-    public String column;
-    public String value;
+    private final String column;
+    private final String value;
 
     //FIXME: check if filter is available, map search_param to column_name if needed
     @Autowired
     public SearchFilter(final String column, final String value) {
         this.column = column;
         this.value = value;
+    }
+
+    public String getColumn() {
+        return column;
+    }
+
+    public String getValue() {
+        return value;
     }
 }
