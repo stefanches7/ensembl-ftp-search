@@ -1,24 +1,28 @@
 package ebi.ensembl.ftpsearchapi;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import ebi.ensembl.ftpsearchapi.utils.InvalidFilterException;
+import ebi.ensembl.ftpsearchapi.utils.ParamsHelper;
 
 /**
- * Filter for searching the links database. Constructed only over supported filters.
+ * Filter object for searching the links database. Constructed only over supported filters.
  */
 public class SearchFilter {
 
-    private final String column;
+    private final String param;
     private final String value;
 
     //FIXME: check if filter is available, map search_param to column_name if needed
-    @Autowired
-    public SearchFilter(final String column, final String value) {
-        this.column = column;
+    public SearchFilter(final String param, final String value) throws InvalidFilterException {
+        final String camelCaseParam = ParamsHelper.camelCasify(param);
+        if (!ParamsHelper.isValidFilterKey(camelCaseParam)) {
+            throw new InvalidFilterException(camelCaseParam);
+        }
+        this.param = camelCaseParam;
         this.value = value;
     }
 
-    public String getColumn() {
-        return column;
+    public String getParam() {
+        return param;
     }
 
     public String getValue() {

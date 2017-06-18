@@ -1,0 +1,10 @@
+<dataset>
+    <link id="1"
+          organism_name="facebookaddict"
+          file_type="fb"
+          link_url="http://www.facebook.com/"/>
+    <link id="2"
+          organism_name="Silvesternacht"
+          file_type="fb"
+          link_url="http://web.org/"/>
+</dataset>

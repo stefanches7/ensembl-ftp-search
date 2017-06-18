@@ -20,6 +20,6 @@ public class LinkSpecification implements Specification<Link> {
 
     @Override
     public Predicate toPredicate(final Root<Link> root, final CriteriaQuery<?> query, final CriteriaBuilder cb) {
-        return cb.equal(root.get(searchFilter.getColumn()),searchFilter.getValue());
+        return cb.equal(root.get(searchFilter.getParam()),searchFilter.getValue());
     }
 }
