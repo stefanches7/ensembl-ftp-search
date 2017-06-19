@@ -13,6 +13,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.net.MalformedURLException;
@@ -32,7 +33,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 @SpringBootTest
 @PropertySource("classpath:application.properties")
 @DataJpaTest
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,DbUnitTestExecutionListener.class})
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,DbUnitTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class})
 @DatabaseSetup("classpath:test_link_table.xml")
 public class FtpSearchApiApplicationTests {
 
