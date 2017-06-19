@@ -9,19 +9,47 @@ Following software is required to run the server:
 * Gradle
 
 Gradle can be automatically installed via Gradle Wrapper, that is:
-Linux 
+
+Linux: 
 ```bash
 ensembl-ftp-search~$ ./gradlew
 ```
-Windows
-````cmd
+
+Windows:
+```cmd
 ensembl-ftp-search> exec gradlew.bat
 
 ```
 
-Please refer to gradle documentation for more instructions.
+Please refer to the Gradle documentation for more instructions.
 
 Configuration
 -------------
 
 All the important configuration values are specified in the `application.properties` file located in the src/main/resources folder.
+
+Usage
+=====
+
+HTTP requests
+-------------
+
+API can be accessed through HTTP requests to the various endpoints:
+
+* `/search` - the end-point for searching, exact description down the page.
+* `/addNew` - adds organism to the specified database. Please note that this is a debug feature and will be removed on the release.
+* `/findAll` - sends all the database records in form of JSON objects. This feature is also debug.
+
+Searching
+---------
+`/search` endpoint provides the interface to search the database applying all the filters specified. You are to specify the filters either in camelCase form or with_underscores_between_words, i.e. both `organismName` and `organism_name` are accepted. The API warns about the filters that were not applied (because they were invalid) in the HTTP response and intersects all the filters that were valid. 
+Your response contains all the links that are relevant to the specified search filters' combination.
+
+Right now the available filers are:
+* `organismName`
+* `fileType`
+
+Add new
+-------
+For adding new organism, please specify all the parameters: `link_url`, `file_type` and `organism_name`. Malformed URLs are not accepted.
+
