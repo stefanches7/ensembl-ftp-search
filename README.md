@@ -45,7 +45,8 @@ Searching
 `/search` endpoint provides the interface to search the database applying all the filters specified. You are to specify the filters either in camelCase form or with_underscores_between_words, i.e. both `organismName` and `organism_name` are accepted. The API warns about the filters that were not applied (because they were invalid) in the HTTP response and intersects all the filters that were valid. 
 Your response contains all the links that are relevant to the specified search filters' combination.
 
-Right now the available filers are:
+Right now the available filters are:
+
 * `organismName`
 * `fileType`
 
