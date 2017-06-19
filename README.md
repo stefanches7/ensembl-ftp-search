@@ -49,6 +49,12 @@ Right now the available filers are:
 * `organismName`
 * `fileType`
 
+_Examples_: 
+
+`<ip>:<port>/search?organismName=Bushbaby&file_type=.vep`
+
+`curl <ip> <port> -d organism_name='Bushbaby' -d fileType='.vep'`
+
 Add new
 -------
 For adding new organism, please specify all the parameters: `link_url`, `file_type` and `organism_name`. Malformed URLs are not accepted.
