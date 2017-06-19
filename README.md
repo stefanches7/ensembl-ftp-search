@@ -11,11 +11,12 @@ Following software is required to run the server:
 Gradle can be automatically installed via Gradle Wrapper, that is:
 Linux 
 ```bash
-ensembl-ftp-search $ ./gradlew
+ensembl-ftp-search~$ ./gradlew
 ```
 Windows
 ````cmd
 ensembl-ftp-search> exec gradlew.bat
+
 ```
 
 Please refer to gradle documentation for more instructions.
