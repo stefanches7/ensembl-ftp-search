@@ -30,6 +30,25 @@ All the important configuration values are specified in the `application.propert
 
 Usage
 =====
+Starting the server
+-------------------
+The application requires a running MySQL database to work with.
+Please refer to the `spring.datasource` group values in `src\main\resorces\application.properties` file
+to see and/or specify the database connection credentials.
+
+Since application is built with Spring boot framework, it's possible
+to start it with a simple gradle task:
+
+`gradle bootRun`
+
+However it's also possible to start it vanilla gradle core way:
+
+```sbtshell
+gradle build
+java -jar build/libs/ensembl-ftp-search-XXXXX.jar <options>
+```
+
+The server starts at `localhost:8080` by default, which, however, can be changed in `application.properties`.
 
 HTTP requests
 -------------

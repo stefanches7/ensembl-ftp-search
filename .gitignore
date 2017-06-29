@@ -11,7 +11,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 *.zip
@@ -23,3 +22,8 @@ hs_err_pid*
 .idea
 .gradle
 build
+
+#IDEA files
+ensembl-ftp-search.iml
+ensembl-ftp-search.ipr
+ensembl-ftp-search.iws

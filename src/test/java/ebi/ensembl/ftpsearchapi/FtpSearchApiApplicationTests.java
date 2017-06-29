@@ -56,7 +56,7 @@ public class FtpSearchApiApplicationTests {
     private String linkUrlParam;
 
     @Before
-    public void setup() throws ClassNotFoundException {
+    public void setup() throws ClassNotFoundException, MalformedURLException {
         this.mockSearchReqController = standaloneSetup(new SearchRequestController(linkRepository, env)).build();
         fillUpTestEntities();
         searchPath = env.getProperty("search_path");
@@ -67,22 +67,15 @@ public class FtpSearchApiApplicationTests {
 
     }
 
-    private void fillUpTestEntities() {
+    private void fillUpTestEntities() throws MalformedURLException {
         testEntity1 = new Link();
         testEntity1.setOrganismName("facebookaddict");
         testEntity1.setFileType("fb");
-        try {
-            testEntity1.setLinkUrl(new URL("http://www.facebook.com/"));
-        } catch (final MalformedURLException e) {
-            e.printStackTrace();
-        }
+        testEntity1.setLinkUrl(new URL("http://www.facebook.com/"));
+
 
         testEntity2 = new Link();
-        try {
-            testEntity2.setLinkUrl(new URL("http://web.org"));
-        } catch (final MalformedURLException e) {
-            e.printStackTrace();
-        }
+        testEntity2.setLinkUrl(new URL("http://web.org"));
         testEntity2.setFileType("fb");
         testEntity2.setOrganismName("Silvesternacht");
     }
