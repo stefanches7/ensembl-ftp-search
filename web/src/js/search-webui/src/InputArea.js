@@ -9,7 +9,7 @@ class InputArea extends Component {
         super(props);
         let initialListId = 0;
         this.state = { filterCounter:1, activeFilterElements :
-            [<Filter isFirst="true" listId={initialListId} onSelect={this.handleReferenceSelection} onChange={this.handleValueChange}/>],
+            [<Filter isFirst="true" listId={initialListId} onSelect={this.handleReferenceSelection} onChange={this.handleValueChange} onClickDelete={(key) => this.removeFilter(key)}/>],
             currentElementsData : {0: InitialHelper.getInitialFilterData(initialListId)}};
     }
     handleReferenceSelection = (e,key) => {
@@ -22,10 +22,20 @@ class InputArea extends Component {
         currElemData[key].value  = e.target.value;
         this.setState({currentElementsData: currElemData});
     };
+    removeFilter = (key) => {
+        if (key==0) {
+            return;
+        }
+        let activeFiltersNow = this.state.activeFilterElements;
+        delete activeFiltersNow[key];
+        let currElemData = this.state.currentElementsData;
+        delete currElemData[key];
+        this.setState({activeFilterElements: activeFiltersNow, currentElementsData: currElemData});
+    };
     addFilter = () => {
-        let activeFiltersNow = this.state.activeFilterElements.slice();
-        activeFiltersNow.push(<Filter listId={this.state.filterCounter} onSelect={(e, key) => this.handleReferenceSelection(e, key)}
-                                      onChange={(e,key) =>this.handleValueChange(e, key)}/>);
+        let activeFiltersNow = this.state.activeFilterElements;
+        activeFiltersNow[this.state.filterCounter] = <Filter listId={this.state.filterCounter} onSelect={(e, key) => this.handleReferenceSelection(e, key)}
+                                      onChange={(e,key) =>this.handleValueChange(e, key)} onClickDelete={(key)=>this.removeFilter(key)}/>;
         let currElemData = this.state.currentElementsData;
         currElemData[this.state.filterCounter] = InitialHelper.getInitialFilterData();
         this.setState({activeFilterElements: activeFiltersNow, currentElementsData: currElemData, filterCounter: this.state.filterCounter + 1});
@@ -36,7 +46,6 @@ class InputArea extends Component {
             <FilterList activeFilterElements={this.state.activeFilterElements}/>
             <AddFilterButton onclick={this.addFilter}/>
             <SearchButton onclick={(e) => this.props.onSearchClicked(e, Object.values(this.state.currentElementsData))} />
-            <div name="stateLog">Current data is: {values.map((infoElement) => infoElement.reference + ":" + infoElement.value + ", ")}</div>
         </div>);
     }
 }
@@ -56,7 +65,7 @@ class Filter extends Component {
             <FilterReference onSelect={(e,key) => this.props.onSelect(e,key)} listId={this.props.listId}/>
             <FilterAssignment />
             <FilterValue onChange={(e,key) => this.props.onChange(e,key)} listId={this.props.listId}/>
-            <DeleteFilterButton />
+            {this.props.isFirst?'':<DeleteFilterButton onClick={() => this.props.onClickDelete(this.props.listId)}/>}
         </div>
     }
 }
@@ -85,7 +94,7 @@ class FilterValue extends Component{
 }
 class DeleteFilterButton extends Component {
     render() {
-        return <button className="deleteFilterButton">X delete</button>;
+        return <button className="deleteFilterButton" onClick={(e)=>this.props.onClick()}>X delete</button>;
     }
 }
 
