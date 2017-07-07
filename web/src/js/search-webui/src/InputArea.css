@@ -1,0 +1,17 @@
+.filterContainer {
+    display: flex;
+    justify-content: center;
+    padding: 3px;
+}
+
+.filterContainer > div {
+    margin: 7px;
+}
+
+#addFilterButton {
+    margin: 7px;
+}
+
+.deleteFilterButton {
+    margin-left: 10px;
+}

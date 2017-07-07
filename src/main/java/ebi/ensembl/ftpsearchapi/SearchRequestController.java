@@ -4,10 +4,7 @@ import ebi.ensembl.ftpsearchapi.utils.InvalidFilterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,6 +16,7 @@ import java.util.Map;
  * REST controller that accepts search requests and responds with the needed values.
  */
 @RestController
+@CrossOrigin
 public class SearchRequestController {
 
     private final LinkRepository linkRepository;

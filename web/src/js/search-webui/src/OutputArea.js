@@ -5,29 +5,17 @@ import React, {Component} from "react";
  */
 class OutputArea extends Component{
     render() {
-        return <LinkTable />;
+        return <LinkTable fileLinks={this.props.fileLinks}/>;
     }
 }
 
 class LinkTable extends Component {
-    constructor() {
-        super();
-        this.state = {links: ["http://youspitfirefool.com"]};
-    }
     render() {
-        let links = [];
-        for (let link of this.state.links) {
-            links.push(<Link link={link}/>);
-        }
         return <table>
             <tr>Links satisfying your filters:</tr>
-            {links}
+            {this.props.fileLinks.map((link) => <tr>{link}</tr>)}
         </table>
     }
-}
-
-function Link(props) {
-    return <tr>{props.link}</tr>;
 }
 
 export default OutputArea;
