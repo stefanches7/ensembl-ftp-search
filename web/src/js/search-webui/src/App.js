@@ -10,9 +10,9 @@ class App extends Component {
     }
   initiateRemoteAsyncSearch = (e, currentElementsData) => {
       let searchQuery = SearchHelper.buildSearchQuery(...currentElementsData);
-      let successCallback = (responseText) => {console.log("Response looked like " + responseText);
+      let successCallback = (responseText) => {console.debug("Success! Response looked like " + responseText);
       this.setState({renderedLinks: SearchHelper.parseLinksList(responseText)})};
-      let failureCallback = (statusText) => {console.log("Error in request: " + statusText);
+      let failureCallback = (statusText) => {console.debug("Error in request: " + statusText);
       this.setState({renderedLinks: [statusText]})};
       SearchHelper.asyncSearchGet(searchQuery, successCallback, failureCallback);
   };
@@ -88,7 +88,7 @@ class SearchHelper {
                 " Please" +
                 " try another user-agent");
         }
-        console.log(req);
+        console.log("Sending the request to get the links: " + req);
         req.onload = function () {
             console.log("Success!");
             successCallback(req.responseText)

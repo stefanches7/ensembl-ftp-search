@@ -8,10 +8,10 @@ import ebi.ensembl.ftpsearchapi.utils.ParamsHelper;
  */
 public class SearchFilter {
 
+
     private final String param;
     private final String value;
 
-    //FIXME: check if filter is available, map search_param to column_name if needed
     public SearchFilter(final String param, final String value) throws InvalidFilterException {
         final String camelCaseParam = ParamsHelper.camelCasify(param);
         if (!ParamsHelper.isValidFilterKey(camelCaseParam)) {

@@ -1,6 +1,7 @@
 # Ensembl project FTP search API ![alt link](https://travis-ci.org/stefanches7/ensembl-ftp-search.svg?branch=master)
 Various end-user tools for searching the FTP sites of the Ensembl project.
 
+#HTTP interface
 Setup & requirements
 --------------------
 Following software is required to run the server:
@@ -79,3 +80,15 @@ Add new
 -------
 For adding new organism, please specify all the parameters: `link_url`, `file_type` and `organism_name`. Malformed URLs are not accepted.
 
+#Web User Interface
+Setup
+-----
+Dev mode is run through `npm start`. Please note that WebUI root is
+located at web/src/js/search-webui, hence you have to run `npm start`
+exactly from there.
+
+Configuration
+-------------
+At the moment, there's no place to configure the app. Changeable bits
+of it's behavior, like the URL it connects to, are scattered around 
+the code.

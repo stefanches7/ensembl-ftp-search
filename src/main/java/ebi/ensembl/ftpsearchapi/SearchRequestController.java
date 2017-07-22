@@ -1,6 +1,8 @@
 package ebi.ensembl.ftpsearchapi;
 
 import ebi.ensembl.ftpsearchapi.utils.InvalidFilterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,8 +22,8 @@ import java.util.Map;
 public class SearchRequestController {
 
     private final LinkRepository linkRepository;
-
     private final Environment env;
+    Logger logger = LoggerFactory.getLogger(SearchRequestController.class);
 
     @Autowired
     public SearchRequestController(final LinkRepository linkRepository, final Environment env) {
@@ -32,6 +34,7 @@ public class SearchRequestController {
     @RequestMapping("/search")
     @ResponseBody
     public List<String> search(@RequestParam final Map<String, String> paramMap) {
+        logger.debug("Search request with following parameters came: " + paramMap);
         final LinkSpecificationsIntersector filtersIntersector = new LinkSpecificationsIntersector();
         final List<String> errorsList = new LinkedList<>();
 
@@ -57,6 +60,7 @@ public class SearchRequestController {
         for (final Link link : linkRepository.findAll(producedSpec)) {
             linkUrlsList.add(String.valueOf(link.getLinkUrl()));
         }
+        logger.debug("Sending following found links ");
         return linkUrlsList;
     }
 
@@ -83,6 +87,7 @@ public class SearchRequestController {
 
     @RequestMapping("/hello")
     public String helloWorld() {
+        logger.debug("Saying hello!");
         return env.getProperty("hello_content");
     }
 }

@@ -26,6 +26,7 @@ class InputArea extends Component {
         if (key==0) {
             return;
         }
+        console.debug("Removing filter with the key: " + key);
         let activeFiltersNow = this.state.activeFilterElements;
         delete activeFiltersNow[key];
         let currElemData = this.state.currentElementsData;
@@ -33,6 +34,7 @@ class InputArea extends Component {
         this.setState({activeFilterElements: activeFiltersNow, currentElementsData: currElemData});
     };
     addFilter = () => {
+        console.debug("Adding filter with initial data.");
         let activeFiltersNow = this.state.activeFilterElements;
         activeFiltersNow[this.state.filterCounter] = <Filter listId={this.state.filterCounter} onSelect={(e, key) => this.handleReferenceSelection(e, key)}
                                       onChange={(e,key) =>this.handleValueChange(e, key)} onClickDelete={(key)=>this.removeFilter(key)}/>;
