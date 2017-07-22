@@ -26,18 +26,19 @@ public class LinksCrawler {
 
     private static HashMap<String, ResourceType> walkEntryPoint(final String entryPoint, final String serverAddr) throws
             IOException {
+        final FTPLinkInfoParser linkInfoParser = new FTPLinkInfoParser();
         final FTPClient ftp = new FTPClient();
         final HashMap<String, ResourceType> urlResourceTypeHashMap = new HashMap<>();
         ftp.connect(serverAddr);
         if (!FTPReply.isPositiveCompletion(ftp.getReplyCode())) {
             Logger.getLogger("LinksCrawler").warning("Couldn't connect to the FTP server!");
         }
-        urlResourceTypeHashMap.putAll(listDirectory(ftp, entryPoint, "", serverAddr));
+        urlResourceTypeHashMap.putAll(listDirectory(ftp, entryPoint, "", serverAddr, linkInfoParser));
         return null;
     }
 
     private static HashMap<String, ResourceType> listDirectory(final FTPClient ftpClient, final String parentDir, final
-    String subDir, final String serverPrefix) throws IOException {
+    String subDir, final String serverPrefix, final FTPLinkInfoParser linkInfoParser) throws IOException {
         final HashMap<String, ResourceType> urlResourceTypeHashMap = new HashMap<>();
         String dirToList = parentDir;
         if (!"".equals(subDir)) {
@@ -45,13 +46,15 @@ public class LinksCrawler {
         }
         final FTPFile[] filesInDir = ftpClient.listFiles(dirToList);
         for (final FTPFile fileFound : filesInDir) {
-            urlResourceTypeHashMap.put(serverPrefix + dirToList + fileFound.getName(), ResourceType.FILE);
+            //urlResourceTypeHashMap.put(serverPrefix + dirToList + fileFound.getName(), ResourceType.FILE);
+            FTPFileLinkToRecordTransformer.transformToLinkRecordAndSave(linkInfoParser.parseInfo(serverPrefix +
+                    dirToList + fileFound.getName()));
         }
         final FTPFile[] subdirsInDir = ftpClient.listDirectories(dirToList);
         for (final FTPFile subDirFound : subdirsInDir) {
             //continue recursively diving in the tree structure
-            urlResourceTypeHashMap.put(serverPrefix + dirToList + subDirFound.getName(), ResourceType.DIRECTORY);
-            urlResourceTypeHashMap.putAll(listDirectory(ftpClient, dirToList, subDirFound.getName(), serverPrefix));
+            //urlResourceTypeHashMap.put(serverPrefix + dirToList + subDirFound.getName(), ResourceType.DIRECTORY);
+            urlResourceTypeHashMap.putAll(listDirectory(ftpClient, dirToList, subDirFound.getName(), serverPrefix, linkInfoParser));
         }
         return urlResourceTypeHashMap;
     }
