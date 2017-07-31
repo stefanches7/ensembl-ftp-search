@@ -3,14 +3,14 @@ use strict;
 use warnings FATAL => 'all';
 use Net::FTP;
 
-sub new() {
+sub new {
     my $class = shift;
     my ($host) = @_;
     my $ftp = Net::FTP->new($host) or die "Cannot connect to host {$host}";
     return bless { ftpclient => $ftp }, $class;
 }
 
-sub walk() {
+sub walk {
     my $self = shift;
     my $entrypath = @_;
     my $ftpclient = $self->{ftpclient};
