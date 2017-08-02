@@ -6,7 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.net.URL;
 
 /**
  * Link object representing the link table records from MySQL database.
@@ -20,7 +19,7 @@ public class Link {
     @JsonIgnore
     private long id;
 
-    private URL linkUrl;
+    private String linkUrl;
 
     private String organismName;
 
@@ -31,11 +30,11 @@ public class Link {
         return id;
     }
 
-    public URL getLinkUrl() {
+    public String getLinkUrl() {
         return linkUrl;
     }
 
-    public void setLinkUrl(final URL linkUrl) {
+    public void setLinkUrl(final String linkUrl) {
         this.linkUrl = linkUrl;
     }
 

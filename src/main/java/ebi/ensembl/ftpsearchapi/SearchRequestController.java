@@ -8,8 +8,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -68,11 +66,7 @@ public class SearchRequestController {
     @RequestMapping("/addNew")
     public String addNew(@RequestParam final Map<String, String> paramMap) {
         final Link ftpLink = new Link();
-        try {
-            ftpLink.setLinkUrl(new URL(paramMap.get("link_url")));
-        } catch (final MalformedURLException e) {
-            return "Specified url is not valid. Please, retry your request.";
-        }
+        ftpLink.setLinkUrl(paramMap.get("link_url"));
         ftpLink.setFileType(paramMap.get("file_type"));
         ftpLink.setOrganismName(paramMap.get("organism_name"));
         linkRepository.save(ftpLink);

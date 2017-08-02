@@ -9,8 +9,8 @@ our $ftpensemblgenomesaddr = "ftp.ensemblgenomes.org";
 our @voidedregex = ("CHECKSUM", "README");
 
 my %regexptocolumn_genomes = (
-    "(?:ftp:\/\/)?\/{5}(a-z_)\/" => "organism_name",
-    "(?:ftp:\/\/)?\/{4}(a-z_)\/" => "file_type"
+    qr{(?:ftp:\/{2})?(?:.*?\/){5} #pass the fwd slash 5 times(.*?)\/} => "organism_name",
+    qr{(?:ftp:\/{2})?(?:.*?\/){4} #pass the fwd slash 4 times(.*?)\/} => "file_type"
         );
 
 my %regexptocolumn = (
@@ -30,10 +30,10 @@ sub parsefileinfos {
     }   else {die "Specified URL is not an Ensembl FTP file!";}
 
 
-    my %fileinfos = ();
+    my %fileinfos = ("link_url" => $fileurl);
     while (my ($key, $value) = each (%regexpmap)) {
         say "key: " . $key . ", value: " . $value;
-        if ($fileurl =~ /(?:ftp:\/\/)?\/{5}(_a-z)/i) {
+        if ($fileurl =~ /$key/xi) {
             say "Captured info: $1";
             $fileinfos{$value} = $1;
         }

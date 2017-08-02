@@ -41,7 +41,7 @@ my $searchdbh = DBI->connect($searchdbdsn, $searchdbuser, $searchdbpssw);
 # do not commit the changes after each statement
 $searchdbh->{AutoCommit} = 0;
 
-my $updatesql = 'INSERT INTO link (?, ?, ?)';
+my $updatesql = 'INSERT INTO link (organism_name, file_type, link_url) values (?, ?, ?);';
 
 my $updatesth = $searchdbh->prepare_cached($updatesql);
 
