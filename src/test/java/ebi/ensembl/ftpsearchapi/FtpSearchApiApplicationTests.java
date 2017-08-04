@@ -17,7 +17,6 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -71,11 +70,11 @@ public class FtpSearchApiApplicationTests {
         testEntity1 = new Link();
         testEntity1.setOrganismName("facebookaddict");
         testEntity1.setFileType("fb");
-        testEntity1.setLinkUrl(new URL("http://www.facebook.com/"));
+        testEntity1.setLinkUrl("http://www.facebook.com/");
 
 
         testEntity2 = new Link();
-        testEntity2.setLinkUrl(new URL("http://web.org"));
+        testEntity2.setLinkUrl("http://web.org");
         testEntity2.setFileType("fb");
         testEntity2.setOrganismName("Silvesternacht");
     }
