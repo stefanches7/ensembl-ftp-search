@@ -12,12 +12,11 @@ public class SearchFilter {
     private final String param;
     private final String value;
 
-    public SearchFilter(final String param, final String value) throws InvalidFilterException {
-        final String camelCaseParam = ParamsHelper.camelCasify(param);
-        if (!ParamsHelper.isValidFilterKey(camelCaseParam)) {
-            throw new InvalidFilterException(camelCaseParam);
+    public SearchFilter(final String camelCasifiedParam, final String value) throws InvalidFilterException {
+        if (!ParamsHelper.isValidFilterKey(camelCasifiedParam)) {
+            throw new InvalidFilterException(camelCasifiedParam);
         }
-        this.param = camelCaseParam;
+        this.param = camelCasifiedParam;
         this.value = value;
     }
 

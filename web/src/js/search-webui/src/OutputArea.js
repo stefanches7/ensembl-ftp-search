@@ -3,9 +3,9 @@ import React, {Component} from "react";
 /**
  * Output component in the application.
  */
-class OutputArea extends Component{
+class OutputArea extends Component {
     render() {
-        return <LinkTable fileLinks={this.props.fileLinks}/>;
+        return <LinkTable fileLinks={this.props.fileLinks} />;
     }
 }
 

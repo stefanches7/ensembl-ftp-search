@@ -54,6 +54,8 @@ $updatesth->finish();
 # commit all the changes
 $searchdbh->{AutoCommit} = 1;
 
+my $updatesuggsql = 'TRUNCATE TABLE suggestions UNION INSERT INTO suggestions (organism_name, file_type) values (?,?);';
+
 $searchdbh->disconnect();
 
 

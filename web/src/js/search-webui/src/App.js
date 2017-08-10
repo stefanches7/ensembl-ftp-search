@@ -4,33 +4,42 @@ import InputArea from "./InputArea";
 import OutputArea from "./OutputArea";
 
 class App extends Component {
+    initiateRemoteAsyncSearch = (e, currentElementsData) => {
+        let searchQuery = SearchHelper.buildSearchQuery(...currentElementsData);
+        let successCallback = (responseText) => {
+            console.debug("Success! Response looked like " + responseText);
+            this.setState({renderedLinks: SearchHelper.parseLinksList(responseText)})
+        };
+        let failureCallback = (statusText) => {
+            console.debug("Error in request: " + statusText);
+            this.setState({renderedLinks: [statusText]})
+        };
+        SearchHelper.asyncSearchGet(searchQuery, successCallback, failureCallback);
+    };
+
     constructor() {
         super();
         this.state = {renderedLinks: ["http://youspitfirefool.com"]}
     }
-  initiateRemoteAsyncSearch = (e, currentElementsData) => {
-      let searchQuery = SearchHelper.buildSearchQuery(...currentElementsData);
-      let successCallback = (responseText) => {console.debug("Success! Response looked like " + responseText);
-      this.setState({renderedLinks: SearchHelper.parseLinksList(responseText)})};
-      let failureCallback = (statusText) => {console.debug("Error in request: " + statusText);
-      this.setState({renderedLinks: [statusText]})};
-      SearchHelper.asyncSearchGet(searchQuery, successCallback, failureCallback);
-  };
-  render() {
-    return (<p>
-            <InputArea onSearchClicked={(e, currentElementsData) => this.initiateRemoteAsyncSearch(e, currentElementsData)}/>
-            <hr/>
-            <OutputArea fileLinks={this.state.renderedLinks}/>
-        </p>
-    );
-  }
+
+    render() {
+        return (<p>
+                <InputArea onSearchClicked={(e, currentElementsData) => this.initiateRemoteAsyncSearch(e,
+                    currentElementsData)} />
+                <hr />
+                <OutputArea fileLinks={this.state.renderedLinks} />
+            </p>
+        );
+    }
 }
 
-const paramNameDict = {"Organism name": "organismName", "File type": "fileType"};
-class SearchHelper {
+const paramNameDict = {"Organism name": "organismName", "File type": "fileType", "Taxonomy branch": "taxaBranch"};
+
+export class SearchHelper {
     static get paramNameDict() {
         return paramNameDict;
     }
+
     static convertToReqFormat(paramName, paramValue) {
         return this.paramNameDict[paramName] + "=" + paramValue;
     }
@@ -42,7 +51,7 @@ class SearchHelper {
                 continue;
             }
             searchQuery += SearchHelper.convertToReqFormat(dataElement.reference, dataElement.value);
-            if (dataElements.indexOf(dataElement) !== dataElements.length -1 ) {
+            if (dataElements.indexOf(dataElement) !== dataElements.length - 1) {
                 searchQuery += "&";
             }
         }
@@ -82,7 +91,7 @@ class SearchHelper {
 
     static asyncSearchGet(searchQuery, successCallback, failureCallback) {
         const url = "http://localhost:8080/search?" + searchQuery;
-        let req = SearchHelper.createCORSRequest('GET',url);
+        let req = SearchHelper.createCORSRequest('GET', url);
         if (!req) {
             failureCallback("CORS, an XMLHTTPRequest cross-origin extension, is not supported by your browser." +
                 " Please" +
