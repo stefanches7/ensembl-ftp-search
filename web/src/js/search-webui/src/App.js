@@ -47,6 +47,7 @@ export class SearchHelper {
     static buildSearchQuery(...dataElements) {
         let searchQuery = "";
         for (let dataElement of dataElements) {
+            console.debug("Seeing filter data element:" + dataElement.reference + ", value: " + dataElement.value);
             if (!dataElement.value) {
                 continue;
             }
@@ -91,19 +92,18 @@ export class SearchHelper {
 
     static asyncSearchGet(searchQuery, successCallback, failureCallback) {
         const url = "http://localhost:8080/search?" + searchQuery;
+        console.log("Search query was " + searchQuery);
         let req = SearchHelper.createCORSRequest('GET', url);
         if (!req) {
             failureCallback("CORS, an XMLHTTPRequest cross-origin extension, is not supported by your browser." +
                 " Please" +
                 " try another user-agent");
         }
-        console.log("Sending the request to get the links: " + req);
         req.onload = function () {
-            console.log("Success!");
             successCallback(req.responseText)
         };
         req.onerror = function () {
-            console.log("Failure!");
+            console.debug("Async search has failed!");
             failureCallback(req.statusText)
         };
         req.send();

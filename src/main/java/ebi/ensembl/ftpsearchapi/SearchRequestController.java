@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +52,7 @@ public class SearchRequestController {
                     e.printStackTrace();
                     logger.error("Blame the coder of messing the TaxaSearchFilterContainer up.");
                 }
-                break;
+                continue;
             }
 
             final SearchFilter parsedFilter;
@@ -77,17 +79,35 @@ public class SearchRequestController {
             //Intersect the union with already existing spec
             producedSpec = Specifications.where(producedSpec).and(unionSpec);
         }
-        logger.info("DB lookup specification: " + producedSpec);
 
         final List<String> linkUrlsList = new LinkedList<>();
 
         //Append errors list to the begin of the response.
         linkUrlsList.addAll(errorsList);
 
-        for (final Link link : linkRepository.findAll(producedSpec)) {
-            linkUrlsList.add(String.valueOf(link.getLinkUrl()));
+        Pageable paging = null;
+
+        if (paramMap.containsKey("page") && paramMap.containsKey("size")) {
+            paging = new PageRequest(Integer.parseInt(paramMap.get("page")), Integer.parseInt(paramMap.get
+                    ("size")));
+        } else if (paramMap.containsKey("size")) {
+            //request "size"-many records from the very beginning
+            paging = new PageRequest(0, Integer.parseInt(paramMap.get("size")));
         }
-        logger.debug("Sending following found links ");
+
+        List<Link> linksList = new LinkedList<>();
+        if (paging == null) {
+            //load all of the results
+            linksList = linkRepository.findAll(producedSpec);
+        } else {
+            //load the specified page's content
+            linksList = linkRepository.findAll(producedSpec, paging).getContent();
+        }
+
+        for (final Link link : linksList) {
+            linkUrlsList.add(link.getLinkUrl());
+        }
+        logger.debug("Sending following found links " + linksList);
         return linkUrlsList;
     }
 

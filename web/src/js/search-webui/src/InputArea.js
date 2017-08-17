@@ -11,12 +11,14 @@ class InputArea extends Component {
         currElemData[key].reference = e.target.value;
         this.setState({currentElementsData: currElemData});
     };
-    handleValueChange = (e, key, taxaId) => {
+    handleValueChange = (newValue, key, taxaId) => {
         let currElemData = this.state.currentElementsData;
-        if (taxaId) {
+        if (taxaId && currElemData[key].reference === "Taxonomy branch") {
             //put taxonomy id as a value of the filter
             currElemData[key].value = taxaId;
-        } else {currElemData[key].value = e.target.value;}
+        } else {
+            currElemData[key].value = newValue;
+        }
         this.setState({currentElementsData: currElemData});
     };
     removeFilter = (key) => {
@@ -36,7 +38,7 @@ class InputArea extends Component {
         activeFiltersNow[this.state.filterCounter] =
             <Filter key={this.state.filterCounter} listId={this.state.filterCounter}
                     onSelect={(e, key) => this.handleReferenceSelection(e, key)}
-                    onChange={(e, key) => this.handleValueChange(e, key)}
+                    onChange={(newValue, key, taxaId) => this.handleValueChange(newValue, key, taxaId )}
                     onClickDelete={(key) => this.removeFilter(key)} />;
         let currElemData = this.state.currentElementsData;
         currElemData[this.state.filterCounter] = InitialHelper.getInitialFilterData();
@@ -59,7 +61,6 @@ class InputArea extends Component {
     }
 
     render() {
-        let values = Object.values(this.state.currentElementsData);
         return (<div>
             <FilterList activeFilterElements={this.state.activeFilterElements} />
             <AddFilterButton onclick={this.addFilter} />
@@ -78,32 +79,29 @@ class FilterList extends Component {
 }
 
 class Filter extends Component {
-    loadSuggestions = (e) => {
-        let value = e.target.value;
-        console.log("Value was " + value);
-        this.setState({value: value});
+    loadSuggestionsAndUpstreamEvent = (newValue, key) => {
         if (this.state.reference == "Organism name" || this.state.reference == "File type") {
-            this.loadLocalSuggestions(value);
+            this.loadLocalSuggestions(newValue, key);
         }
         else if (this.state.reference == "Taxonomy branch") {
-            this.loadOLSValueSuggestions(value);
+            this.loadOLSValueSuggestions(newValue, key);
         }
     };
-    loadLocalSuggestions = (value) => {
-        //FIXME
+    loadLocalSuggestions = (newValue, key) => {
+        this.props.onChange(newValue, key, null);
     };
-    loadOLSValueSuggestions = (value) => {
-        if (value === "") {
+    loadOLSValueSuggestions = (newValue, key) => {
+        if (newValue === "") {
             this.setState({suggestions: []});
             return;
         } //nothing is entered
-        let url = "https://www.ebi.ac.uk/ols/api/select?q=" + value + "&ontology=ncbitaxon&fieldList=obo_id,label";
+        let url = "https://www.ebi.ac.uk/ols/api/select?q=" + newValue + "&ontology=ncbitaxon&fieldList=obo_id,label";
         let xhr = SearchHelper.createCORSRequest('GET', url);
         if (!xhr) {
             console.log("Was unable to create taxa suggestion CORS. Perhaps, it is not supported by the browser.");
             return;
         }
-        let filterObj = this;
+        let filterObj = this; //use Filter object in onload callback
         xhr.onload = function () {
             let suggJSON = JSON.parse(xhr.responseText);
             let newTaxaSugg = [];
@@ -111,6 +109,7 @@ class Filter extends Component {
                 newTaxaSugg.push(autosuggObj);
             }
             filterObj.setState({suggestions: newTaxaSugg});
+            filterObj.props.onChange(newValue, key, filterObj.getSuggestedTaxaId(newValue))
         };
         xhr.send();
     };
@@ -122,13 +121,15 @@ class Filter extends Component {
     };
     getSuggestedTaxaId = (value) => {
         if (this.state.reference != "Taxonomy branch") { return; }
-        let taxaId = 0;
+        let taxaId = null;
         let taxaIdSingleton = this.state.suggestions.map((suggObj) => {
             if (suggObj.label === value) {
-                return suggObj.obo_id.substring(11) //-"NCBITaxon:"
+                return suggObj.obo_id.substring(10) //-"NCBITaxon:"
             }});
-        if (taxaIdSingleton.length < 1) {
-            taxaId = this.state.suggestions[0].obo_id.substring(11) //-"NCBITaxon:"
+        if (taxaIdSingleton[0] === undefined && this.state.suggestions.length > 0) {
+            console.debug("Didn't match any suggestion, taking first as the right one.");
+            let firstSugg = this.state.suggestions[0];
+            taxaId = firstSugg.obo_id.substring(10); //-"NCBITaxon:"
         } else {taxaId = taxaIdSingleton[0]}
         return taxaId;
     };
@@ -145,9 +146,8 @@ class Filter extends Component {
                 this.props.onSelect(e, key);
                 this.updateReference(e)}} listId={this.props.listId} />
             <FilterAssignment />
-            <FilterValue onChange={(e, key) => {
-                this.loadSuggestions(e);
-                this.props.onChange(e, key, getSuggestedTaxaId(e.target.value))}}
+            <FilterValue onChange={(newValue, key) => {
+                this.loadSuggestionsAndUpstreamEvent(newValue, key)}}
                          listId={this.props.listId}
                          suggestions={this.state.suggestions.map((suggObj) => suggObj.label)} />
             {this.props.isFirst ? '' :
@@ -178,7 +178,7 @@ class FilterValue extends Component {
         let i = 0;
         return <div>
             <input onChange={(e) => {
-                this.props.onChange(e, this.props.listId)
+                this.props.onChange(e.target.value, this.props.listId)
             }}
                    list={`suggestions-${this.props.listId}`} />
             <datalist id={`suggestions-${this.props.listId}`}>

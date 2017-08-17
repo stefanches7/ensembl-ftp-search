@@ -31,7 +31,7 @@ public class DistantConnector {
                     "BETWEEN p.left_index AND p.right_index) JOIN ensembl_metadata.organism o ON (o" +
                     ".taxonomy_id=c" +
                     ".taxon_id)" +
-                    " WHERE p.taxon_id=? AND p.taxon_id!=c.taxon_id;");
+                    " WHERE p.taxon_id=?");
             st.setInt(1, parentId);
             rs = st.executeQuery();
             while (rs.next()) {
@@ -53,7 +53,7 @@ public class DistantConnector {
                 logger.error(e.getMessage());
             }
         }
-        logger.info("Got organism name by the taxa id: " + childOrganismNames);
+        logger.info("Got organism names by the parent taxa id: " + childOrganismNames);
         return childOrganismNames;
     }
 }
