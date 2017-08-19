@@ -18,7 +18,8 @@ use FTPCrawler;
 use feature qw/say/;
 
 # full-length urls
-my @entrypoints = ("ftp.ensemblgenomes.org/pub/release-36/metazoa/embl/acyrthosiphon_pisum", "ftp://ftp.ensemblgenomes.org/pub/release-36/metazoa/vcf");
+# NB! Links are supposed to be leafs of current release endpoints (e.g. ftp.ensembl.org/pub/release-XX)!
+my @entrypoints = ("ftp.ensemblgenomes.org/pub/release-36/metazoa/");
 
 # search database credentials
 my $searchdbdsn = "DBI:mysql:database=ensembl_api_test;host=localhost;port=3306";
@@ -27,35 +28,23 @@ my $searchdbpssw = "ensemblrules";
 
 my @filelinks = ();
 
+my $searchdbop = SearchDBOperator->new($searchdbdsn, $searchdbuser, $searchdbpssw);
+my $dbh = $searchdbop->{dbh};
+my $starttime = localtime();
+say "Starting update job at $starttime";
+
 for my $entrypoint (@entrypoints) {
+    $entrypoint =~ s/\/$//;
     if ($entrypoint =~ /($FTPFilenameUtil::ftpensembladdr|$FTPFilenameUtil::ftpensemblgenomesaddr)(.*)/i) {
-        push @filelinks, FTPCrawler->initiate($1, $2);
+        push @filelinks, FTPCrawler->initiate($1, $2, $searchdbop);
     } else {
         die "Specified entrypoint is not an FTP site of Ensembl!";
     }
 }
 
-say for @filelinks;
-
-my $searchdbh = DBI->connect($searchdbdsn, $searchdbuser, $searchdbpssw);
-# do not commit the changes after each statement
-$searchdbh->{AutoCommit} = 0;
-
-my $updatesql = 'INSERT INTO link (organism_name, file_type, link_url) values (?, ?, ?);';
-
-my $updatesth = $searchdbh->prepare_cached($updatesql);
-
-foreach my $link (@filelinks) {
-    my %rowinfo = FTPFilenameUtil->parsefileinfos($link);
-    $updatesth->execute($rowinfo{"organism_name"}, $rowinfo{"file_type"}, $rowinfo{"link_url"});
-}
-
-$updatesth->finish();
-# commit all the changes
-$searchdbh->{AutoCommit} = 1;
-
-my $updatesuggsql = 'TRUNCATE TABLE suggestions UNION INSERT INTO suggestions (organism_name, file_type) values (?,?);';
-
-$searchdbh->disconnect();
+$searchdbop->updatesuggs();
+$dbh->disconnect();
+my $finishtime = localtime();
+say "Finished update job at $finishtime";
 
 

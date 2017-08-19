@@ -6,9 +6,7 @@ package ebi.ensembl.ftpsearchapi.utils;
 enum SupportedFilters {
 
     ORGANISM_NAME("organismName"),
-    FILE_TYPE("fileType"),
-    PAGE("page"),
-    SIZE("size");
+    FILE_TYPE("fileType");
 
     private final String value;
 

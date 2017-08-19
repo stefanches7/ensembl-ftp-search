@@ -87,9 +87,6 @@ class Filter extends Component {
             this.loadOLSValueSuggestions(newValue, key);
         }
     };
-    loadLocalSuggestions = (newValue, key) => {
-        this.props.onChange(newValue, key, null);
-    };
     loadOLSValueSuggestions = (newValue, key) => {
         if (newValue === "") {
             this.setState({suggestions: []});
@@ -110,6 +107,30 @@ class Filter extends Component {
             }
             filterObj.setState({suggestions: newTaxaSugg});
             filterObj.props.onChange(newValue, key, filterObj.getSuggestedTaxaId(newValue))
+        };
+        xhr.send();
+    };
+    loadLocalSuggestions = (newValue, key) => {
+        if (newValue === "") {
+            this.setState({suggestions: []});
+            return;
+        } //nothing is entered
+        let url = "http://localhost:8080/" + SearchHelper.paramNameDict[this.state.reference]+"Suggestion?value=" + newValue;
+                                                                //construct endpoint with current filter reference
+        let xhr = SearchHelper.createCORSRequest('GET', url);
+        if (!xhr) {
+            console.log("Was unable to create local suggestion CORS. Perhaps, it is not supported by the browser.");
+            return;
+        }
+        let filterObj = this; //use Filter object in onload callback
+        xhr.onload = function () {
+            let responseStrip = xhr.responseText.toString().replace(/[\[\]'"]+/g, '');
+            let newSugg = [];
+            for (let suggestion of responseStrip.split(",")) {
+                newSugg.push({label: suggestion, obo_id: ""}); //adhere to taxa suggestions format
+            }
+            filterObj.setState({suggestions: newSugg});
+            filterObj.props.onChange(newValue, key, null);
         };
         xhr.send();
     };

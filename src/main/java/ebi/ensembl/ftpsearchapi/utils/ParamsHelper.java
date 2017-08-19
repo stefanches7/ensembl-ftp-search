@@ -15,6 +15,10 @@ public class ParamsHelper {
         return true;
     }
 
+    public static boolean isValidSupportParam(String param) {
+        return "page".equals(param) || "size".equals(param);
+    }
+
     /**
      * Converts params with underscore word delimiters to camel-case ones matching the Spring Data aliases. I.e.,
      * <b>organism_name</b> will be converted to <b>organismName</b>.

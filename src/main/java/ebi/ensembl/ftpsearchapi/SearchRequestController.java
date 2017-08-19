@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * REST controller that accepts search requests and responds with the needed values.
@@ -23,14 +24,20 @@ import java.util.Map;
 @CrossOrigin
 public class SearchRequestController {
 
+    private final FileTypeSuggestionRepository fileTypeSuggestionRepository;
+    private final OrganismNameSuggestionRepository organismNameSuggestionRepository;
     private final LinkRepository linkRepository;
     private final Environment env;
     Logger logger = LoggerFactory.getLogger(SearchRequestController.class);
 
     @Autowired
-    public SearchRequestController(final LinkRepository linkRepository, final Environment env) {
+    public SearchRequestController(final OrganismNameSuggestionRepository organismNameSuggestionRepository,
+                                   final LinkRepository linkRepository, final Environment env,
+                                   FileTypeSuggestionRepository fileTypeSuggestionRepository) {
         this.linkRepository = linkRepository;
         this.env = env;
+        this.organismNameSuggestionRepository = organismNameSuggestionRepository;
+        this.fileTypeSuggestionRepository = fileTypeSuggestionRepository;
     }
 
     @RequestMapping("/search")
@@ -43,6 +50,9 @@ public class SearchRequestController {
 
         for (final Map.Entry<String, String> filterEntry : paramMap.entrySet()) {
 
+            if (ParamsHelper.isValidSupportParam(filterEntry.getKey())) { //paging params etc.
+                continue;
+            }
             final String camelCasifiedParam = ParamsHelper.camelCasify(filterEntry.getKey());
 
             if ("taxaBranch".equals(camelCasifiedParam)) {
@@ -50,7 +60,7 @@ public class SearchRequestController {
                     taxaSearchFilterContainers.add(new TaxaSearchFilterContainer(Integer.valueOf(filterEntry.getValue())));
                 } catch (final InvalidFilterException e) {
                     e.printStackTrace();
-                    logger.error("Blame the coder of messing the TaxaSearchFilterContainer up.");
+                    logger.error("Blame the coder for messing the TaxaSearchFilterContainer up.");
                 }
                 continue;
             }
@@ -69,17 +79,24 @@ public class SearchRequestController {
 
         Specification<Link> producedSpec = filtersIntersector.produce();
 
+        boolean isOrganismNameFilterSeen = false; //taxa filter adequacy flag
+
         for (final TaxaSearchFilterContainer filterContainer : taxaSearchFilterContainers) {
             //Unite all the organism name filters
             final LinkSpecificationsUnifier linkSpecificationsUnifier = new LinkSpecificationsUnifier();
-            for (final SearchFilter organismNameSearchFilter : filterContainer.getChildrenNamesSearchFilters()) {
+            List<SearchFilter> childrenNameFilters = filterContainer.getChildrenNamesSearchFilters();
+            if (!childrenNameFilters.isEmpty()) {isOrganismNameFilterSeen = true;}
+            for (final SearchFilter organismNameSearchFilter : childrenNameFilters) {
                 linkSpecificationsUnifier.with(organismNameSearchFilter);
             }
             final Specification<Link> unionSpec = linkSpecificationsUnifier.produce();
             //Intersect the union with already existing spec
             producedSpec = Specifications.where(producedSpec).and(unionSpec);
         }
-
+        if (!isOrganismNameFilterSeen) {
+            errorsList.add("Taxa branch that you've specified doesn't contain any Ensembl organism. Therefore, this " +
+                    "filter was suspended.");
+        }
         final List<String> linkUrlsList = new LinkedList<>();
 
         //Append errors list to the begin of the response.
@@ -111,21 +128,19 @@ public class SearchRequestController {
         return linkUrlsList;
     }
 
-    //FIXME: refactor to be used by update job only/delete!
-    @RequestMapping("/addNew")
-    public String addNew(@RequestParam final Map<String, String> paramMap) {
-        final Link ftpLink = new Link();
-        ftpLink.setLinkUrl(paramMap.get("link_url"));
-        ftpLink.setFileType(paramMap.get("file_type"));
-        ftpLink.setOrganismName(paramMap.get("organism_name"));
-        linkRepository.save(ftpLink);
-        return "Successfully written.\n";
+    @RequestMapping("/organismNameSuggestion")
+    public List<String> suggestOrganismName(@RequestParam String value) {
+        List<OrganismNameSuggestion> organismNameSuggestionList = organismNameSuggestionRepository
+                .findByOrganismNameLimit20("%" + value + "%"); //append mysql wildcards
+        return organismNameSuggestionList.stream().map(orgNameSugg -> orgNameSugg.getOrganismName()).collect(Collectors.toList());
     }
 
-    @RequestMapping("/findAll")
-    @ResponseBody
-    public Iterable<Link> findAll() {
-        return linkRepository.findAll();
+    @RequestMapping("/fileTypeSuggestion")
+    public List<String> suggestFileType(@RequestParam String value) {
+        List<FileTypeSuggestion> fileTypeSuggestionList = fileTypeSuggestionRepository
+                .findByFileTypeLimit20("%" + value + "%"); //append mysql wildcards
+        return fileTypeSuggestionList.stream().map(fileTypeSugg -> fileTypeSugg.getFileType()).collect(Collectors.toList
+                ());
     }
 
     @RequestMapping("/hello")
