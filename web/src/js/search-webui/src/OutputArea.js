@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 
 /**
- * Output component in the application.
+ * Results output.
  */
 class OutputArea extends Component {
     render() {
@@ -9,6 +9,9 @@ class OutputArea extends Component {
     }
 }
 
+/**
+ * Table containing all the link results of the latter search.
+ */
 class LinkTable extends Component {
     render() {
         return <table>

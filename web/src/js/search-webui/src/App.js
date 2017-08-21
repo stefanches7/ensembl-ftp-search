@@ -2,8 +2,12 @@ import React, {Component} from "react";
 import "./App.css";
 import InputArea from "./InputArea";
 import OutputArea from "./OutputArea";
+import {appconfig} from "./config";
 
 class App extends Component {
+    /**
+     * speak to HTTP interface's /search endpoint
+     */
     initiateRemoteAsyncSearch = (e, currentElementsData) => {
         let searchQuery = SearchHelper.buildSearchQuery(...currentElementsData);
         let successCallback = (responseText) => {
@@ -21,7 +25,7 @@ class App extends Component {
         super();
         this.state = {renderedLinks: ["You haven't searched for anything yet."]}
     }
-
+    
     render() {
         return (<p>
                 <InputArea onSearchClicked={(e, currentElementsData) => this.initiateRemoteAsyncSearch(e,
@@ -33,6 +37,7 @@ class App extends Component {
     }
 }
 
+//map human-readable param names to HTTP interface convention
 const paramNameDict = {"Organism name": "organismName", "File type": "fileType", "Taxonomy branch": "taxaBranch",
     "Page size": "size", "Page number": "page"};
 
@@ -41,10 +46,21 @@ export class SearchHelper {
         return paramNameDict;
     }
 
+    /**
+     * Convert to a search term in query
+     * @param paramName
+     * @param paramValue
+     * @returns {string} "paramName=paramValue"
+     */
     static convertToReqFormat(paramName, paramValue) {
         return this.paramNameDict[paramName] + "=" + paramValue;
     }
 
+    /**
+     * Convert current DOM data to HTTP search query
+     * @param dataElements objects artis {reference: <>, value: <>} holding infos about current app state
+     * @returns {string} HTTP search query artis "param1=value1&param2=value2..."
+     */
     static buildSearchQuery(...dataElements) {
         let searchQuery = "";
         for (let dataElement of dataElements) {
@@ -91,9 +107,16 @@ export class SearchHelper {
         return xhr;
     }
 
+    /**
+     * Launch search request to the HTTP server
+     * 
+     * @param searchQuery from .buildSearchQuery()
+     * @param successCallback called on successful request
+     * @param failureCallback called on request's failure
+     */
     static asyncSearchGet(searchQuery, successCallback, failureCallback) {
-        const url = "http://localhost:8080/search?" + searchQuery;
-        console.log("Search query was " + searchQuery);
+        const url = appconfig.httpSearchInterfaceUrl + appconfig.httpSISearchEndp + searchQuery;
+        console.debug("Search query was " + searchQuery);
         let req = SearchHelper.createCORSRequest('GET', url);
         if (!req) {
             failureCallback("CORS, an XMLHTTPRequest cross-origin extension, is not supported by your browser." +
@@ -110,6 +133,11 @@ export class SearchHelper {
         req.send();
     }
 
+    /**
+     * Convert Java-style list of links to array of pure links
+     * @param responseText list artis [<link1>, <link2, ...]
+     * @returns {Array} array of separate links s
+     */
     static parseLinksList(responseText) {
         let responseStrip = responseText.toString().replace(/[\[\]'"]+/g, '');
         return responseStrip.split(",");

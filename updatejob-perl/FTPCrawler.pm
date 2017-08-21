@@ -1,3 +1,12 @@
+=head1 NAME
+
+FTPCrawler.pm
+
+=head1 DESCRIPTION
+
+Module used to recursively crawl the FTP sites of Ensembl updating search indices.
+
+=cut
 package FTPCrawler;
 use strict;
 use warnings FATAL => 'all';

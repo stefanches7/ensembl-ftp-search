@@ -1,16 +1,28 @@
 import React, {Component} from "react";
 import "./InputArea.css";
 import {SearchHelper} from "./App";
+import {appconfig} from "./config"
 
 /**
- * Component of the user input in the application
+ * Everything that has to do with specifying or activating the search.
  */
 class InputArea extends Component {
+    /**
+     * Filter reference changed callback.
+     * @param e change event
+     * @param key Filter's unique id
+     */
     handleReferenceSelection = (e, key) => {
         let currElemData = this.state.currentElementsData;
         currElemData[key].reference = e.target.value;
         this.setState({currentElementsData: currElemData});
     };
+    /**
+     * Filter value changed callback.
+     * @param newValue updated value of the fiter
+     * @param key filter's unique id
+     * @param taxaId taxonomy id of selected taxa branch, null for N/A references
+     */
     handleValueChange = (newValue, key, taxaId) => {
         let currElemData = this.state.currentElementsData;
         if (taxaId && currElemData[key].reference === "Taxonomy branch") {
@@ -27,6 +39,10 @@ class InputArea extends Component {
     onPageNoChanged = (newValue) => {
         this.setState({pageNo: newValue - 1});
     };
+    /**
+     * Hit when filter is deleted.
+     * @param key filter's unique id
+     */
     removeFilter = (key) => {
         if (key == 0) {
             return;
@@ -38,6 +54,9 @@ class InputArea extends Component {
         delete currElemData[key];
         this.setState({activeFilterElements: activeFiltersNow, currentElementsData: currElemData});
     };
+    /**
+     * Hit when new filter is added.
+     */
     addFilter = () => {
         console.debug("Adding filter with initial data.");
         let activeFiltersNow = this.state.activeFilterElements;
@@ -87,6 +106,9 @@ class InputArea extends Component {
     }
 }
 
+/**
+ * Filters wrapper.
+ */
 class FilterList extends Component {
     render() {
         return (<table>
@@ -95,7 +117,15 @@ class FilterList extends Component {
     }
 }
 
+/**
+ * Filter component.
+ */
 class Filter extends Component {
+    /**
+     * Hit the right method of loading suggestions according to filter's reference
+     * @param newValue updated filter's value
+     * @param key filter's unique id
+     */
     loadSuggestionsAndUpstreamEvent = (newValue, key) => {
         if (this.state.reference == "Organism name" || this.state.reference == "File type") {
             this.loadLocalSuggestions(newValue, key);
@@ -104,12 +134,17 @@ class Filter extends Component {
             this.loadOLSValueSuggestions(newValue, key);
         }
     };
+    /**
+     * Load suggestions using OLS API. Applicable for taxonomy branch filter.
+     * @param newValue updated taxonomy branch filter's value
+     * @param key filter's unique id
+     */
     loadOLSValueSuggestions = (newValue, key) => {
         if (newValue === "") {
             this.setState({suggestions: []});
             return;
         } //nothing is entered
-        let url = "https://www.ebi.ac.uk/ols/api/select?q=" + newValue + "&ontology=ncbitaxon&fieldList=obo_id,label";
+        let url = appconfig.olsApiUrlSelect + "q=" + newValue + "&ontology=ncbitaxon&fieldList=obo_id,label";
         let xhr = SearchHelper.createCORSRequest('GET', url);
         if (!xhr) {
             console.log("Was unable to create taxa suggestion CORS. Perhaps, it is not supported by the browser.");
@@ -127,19 +162,25 @@ class Filter extends Component {
         };
         xhr.send();
     };
+    /**
+     * Load suggestions using own HTTP interface's search database (applicable for organism name and file type).
+     * @param newValue updated filter's value
+     * @param key filter's unique id
+     */
     loadLocalSuggestions = (newValue, key) => {
         if (newValue === "") {
             this.setState({suggestions: []});
             return;
         } //nothing is entered
-        let url = "http://localhost:8080/" + SearchHelper.paramNameDict[this.state.reference]+"Suggestion?value=" + newValue;
-                                                                //construct endpoint with current filter reference
+        let url = appconfig.httpSearchInterfaceUrl + "/" + SearchHelper.paramNameDict[this.state.reference]+"Suggestion?value=" + newValue;
+                                                                //construct endpoint with current filter reference,
+        // e.g. <serverurl>/organismNameSuggestion?value=<value>
         let xhr = SearchHelper.createCORSRequest('GET', url);
         if (!xhr) {
             console.log("Was unable to create local suggestion CORS. Perhaps, it is not supported by the browser.");
             return;
         }
-        let filterObj = this; //use Filter object in onload callback
+        let filterObj = this; //act upon this Filter object in onload callback
         xhr.onload = function () {
             let responseStrip = xhr.responseText.toString().replace(/[\[\]'"]+/g, '');
             let newSugg = [];
@@ -151,12 +192,23 @@ class Filter extends Component {
         };
         xhr.send();
     };
+    /**
+     * Update current state on filter reference's update.
+     * @param e update event
+     */
     updateReference = (e) => {
         let reference = e.target.value;
         if (reference !== this.state.reference) { //clean suggestions on new selection
             this.setState({reference: reference, suggestions: []});
         }
     };
+    /**
+     * Upstream current taxa id by filter's value specified. *Takes the first suggestion in list if specified value
+     * itself doesn't correspond to any taxa id.
+     * 
+     * @param value
+     * @returns {*}
+     */
     getSuggestedTaxaId = (value) => {
         if (this.state.reference != "Taxonomy branch") { return; }
         let taxaId = null;
@@ -194,10 +246,21 @@ class Filter extends Component {
     }
 }
 
+/**
+ * Filter prefix. Fixme: change to accept other logical functions (e.g. or, not).
+ * @returns {XML} 
+ * @constructor
+ */
 function FilterPrefix() {
     return <div>and</div>;
 }
 
+/**
+ * Filter's type.
+ * @param props HTML props & upstream callbacks.
+ * @returns {XML} render
+ * @constructor
+ */
 function FilterReference(props) {
     const availableFilters = ["Organism name", "File type", "Taxonomy branch"];
     return <select required={true} onChange={(e) => {
@@ -207,10 +270,18 @@ function FilterReference(props) {
     </select>;
 }
 
+/**
+ * FIXME: implement other assignments, e.g. "not equals"
+ * @returns {XML}
+ * @constructor
+ */
 function FilterAssignment() {
     return <div>eq</div>;
 }
 
+/**
+ * Filter's value input component. Turns into not-required list when something is typed (suggestions are loaded).
+ */
 class FilterValue extends Component {
     render() {
         let i = 0;
@@ -229,18 +300,27 @@ class FilterValue extends Component {
     }
 }
 
+/**
+ * Deletes the filter in the corresponding row and removes its current state record.
+ */
 class DeleteFilterButton extends Component {
     render() {
         return <button className="deleteFilterButton" onClick={(e) => this.props.onClick()}>X delete</button>;
     }
 }
 
+/**
+ * Appends new filter to the end of the list and creates new current state data record.
+ */
 class AddFilterButton extends Component {
     render() {
         return <button id="addFilterButton" onClick={this.props.onclick}><b>+ Add filter</b></button>;
     }
 }
 
+/**
+ * Activates interface search when hit, see `./App.js`.
+ */
 class SearchButton extends Component {
     render() {
         return <button id="searchButton" onClick={this.props.onclick}>
@@ -249,6 +329,9 @@ class SearchButton extends Component {
     }
 }
 
+/**
+ * Used for result paging. Specify size of the result page.
+ */
 class PageSize extends Component {
     render() {
         return <select required={true} onChange={(e) => this.props.onChange(e)}>
@@ -261,7 +344,9 @@ class PageSize extends Component {
     }
 }
 
-
+/**
+ * Used for result paging. Specify number of the result page.
+ */
 class PageNo extends Component {
     render() {
         return <input type="number" onChange={(e) => this.props.onChange(e)}>
@@ -269,6 +354,9 @@ class PageNo extends Component {
     }
 }
 
+/**
+ * Helps with defaults.
+ */
 class InitialHelper {
     static getInitialFilterData() {
         return {reference: "Organism name", value: "", suggestions: []};

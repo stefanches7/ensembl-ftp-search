@@ -1,3 +1,22 @@
+=head1 NAME
+
+SearchDBOperator.pm
+
+=head1 SYNOPSIS
+
+use SearchDBOperator;
+my $dbop = SearchDBOperator->new($dsn, $user, $pssw);
+my $dbh = $dbop->{dbh};
+$dbh->{AutoCommit} = 0; #update db in transactions
+$dbop->insertlinkrow(%rowingfo); #insert db record
+$dbh->disconnect(); #finish work
+
+=head1 DESCRIPTION
+
+DBI database handler wrapper with useful functions for indices update job.
+
+=cut
+
 package SearchDBOperator;
 use strict;
 use warnings FATAL => 'all';

@@ -1,3 +1,18 @@
+=head1 NAME
+
+FTPFilenameUtil.pm
+
+=head1 SYNOPSIS
+
+use FTPFilenameUtil;
+my %infoshash = FTPFilenameUtil->parsefileinfos($ensemblftpsitefileurl);
+
+=head1 DESCRIPTION
+
+Used to get information about a file on Ensembl site looking at its URL.
+
+=cut
+
 package FTPFilenameUtil;
 use strict;
 use warnings FATAL => 'all';
@@ -8,7 +23,8 @@ our $ftpensemblgenomesaddr = "ftp.ensemblgenomes.org";
 
 # This regex is being ignored once seen by the crawler. Recursive crawling stops as well.
 our @voidedregex = ("CHECKSUM", "README", "\/mysql\/", ".ova", "species_", "uniprot_", "web_","\/xml\/", "\/bamcov\/",
-    "\/bed\/","\/blat\/","\/compara\/","\/data_files\/","\/emf\/","\/maf\/","\/ncbi_blast\/","\/regulation\/","\/solr_srch\/");
+    "\/bed\/","\/blat\/","\/compara\/","\/data_files\/","\/emf\/","\/maf\/","\/ncbi_blast\/","\/regulation\/","\/solr_srch\/",
+    "\/assembly_chain\/assembly_chain");#FIXME remove ftp.ensembl.org/assembly_chain/assembly_chain file leading to nowhere
 # "Normal" datatypes which share the same directory structure. fasta and vep formats are handled separately.
 our @whitelistdatatypes = ("\/assembly_chain\/", "\/embl\/", "\/genbank\/", "\/gff3\/", "\/gtf\/", "\/gvf\/",
                             "\/vcf\/", "\/rdf\/", "\/tsv\/", "\/json\/");
@@ -43,7 +59,7 @@ sub parsefileinfos {
     }
     elsif ($fileurl =~ /\/vep\//i) {
         #variation file
-        $fileinfos{"organism_name"} = $1 if $fileurl =~ /\/vep\/(?:.*?_collection\/)?(.*?)_vep_*/i;
+        $fileinfos{"organism_name"} = $1 if $fileurl =~ /\/vep\/(?:.*?_collection\/)?(.*?)(?:_merged|_refseq)?_vep_*/i;
         #parse the organism name straight out of filename, anything until "_vep_" prefix
         $fileinfos{"file_type"} = "vep";
     }
