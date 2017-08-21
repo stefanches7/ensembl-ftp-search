@@ -19,7 +19,7 @@ class App extends Component {
 
     constructor() {
         super();
-        this.state = {renderedLinks: ["http://youspitfirefool.com"]}
+        this.state = {renderedLinks: ["You haven't searched for anything yet."]}
     }
 
     render() {
@@ -33,7 +33,8 @@ class App extends Component {
     }
 }
 
-const paramNameDict = {"Organism name": "organismName", "File type": "fileType", "Taxonomy branch": "taxaBranch"};
+const paramNameDict = {"Organism name": "organismName", "File type": "fileType", "Taxonomy branch": "taxaBranch",
+    "Page size": "size", "Page number": "page"};
 
 export class SearchHelper {
     static get paramNameDict() {

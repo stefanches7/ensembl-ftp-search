@@ -20,7 +20,6 @@ import java.net.MalformedURLException;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
@@ -45,6 +44,12 @@ public class FtpSearchApiApplicationTests {
     @Autowired
     private LinkRepository linkRepository;
 
+    @Autowired
+    private OrganismNameSuggestionRepository organismNameSuggestionRepository;
+
+    @Autowired
+    private FileTypeSuggestionRepository fileTypeSuggestionRepository;
+
     private Link testEntity1;
     private Link testEntity2;
 
@@ -53,13 +58,17 @@ public class FtpSearchApiApplicationTests {
     private String orgNameParam;
     private String fileTypeParam;
     private String linkUrlParam;
+    private String orgNameSuggPath;
+    private String fileTypeSuggPath;
 
     @Before
     public void setup() throws ClassNotFoundException, MalformedURLException {
-        this.mockSearchReqController = standaloneSetup(new SearchRequestController(linkRepository, env)).build();
+        this.mockSearchReqController = standaloneSetup(new SearchRequestController(organismNameSuggestionRepository,
+                linkRepository, env, fileTypeSuggestionRepository)).build();
         fillUpTestEntities();
+        fileTypeSuggPath = env.getProperty("filetype_sugg_path");
+        orgNameSuggPath = env.getProperty("orgname_sugg_path");
         searchPath = env.getProperty("search_path");
-        addNewPath = env.getProperty("add_new_path");
         orgNameParam = env.getProperty("organism_name_param");
         fileTypeParam = env.getProperty("file_type_param");
         linkUrlParam = env.getProperty("link_url_param");
@@ -90,30 +99,6 @@ public class FtpSearchApiApplicationTests {
                 (status().isOk()).andExpect(content().string(helloContent));
     }
 
-    /**
-     * Existence of this test and corresponding behavior is temporary.
-     */
-    @Test
-    public void searchReqController_returnsAllLinksOnFindAll() throws Exception {
-        //given
-        final String findAllPath = env.getProperty("get_all_path");
-
-        //when
-        this.mockSearchReqController.perform(get(findAllPath)).andExpect
-                (status().isOk());
-    }
-
-    /**
-     * FIXME: replace with a more proper one/delete when update job is implemented.
-     *
-     */
-    @Test
-    public void searchReqController_writesOrganismToRepo() throws Exception {
-        this.mockSearchReqController.perform(post(addNewPath).param(orgNameParam,
-                testEntity1.getOrganismName()).param(fileTypeParam, testEntity1.getFileType()).param(linkUrlParam,
-                String.valueOf(testEntity1.getLinkUrl())))
-                .andExpect(status().isOk()).andExpect(content().string("Successfully written.\n"));
-    }
 
     @Test
     public void searchReqController_returnsLinkGivenValidAndMatchingParam() throws Exception {
@@ -147,5 +132,11 @@ public class FtpSearchApiApplicationTests {
                 "facebookaddict")).andExpect(status().is2xxSuccessful()).andExpect(content().string(containsString(String
                 .valueOf(testEntity1.getLinkUrl()))));
 
+    }
+
+    @Test
+    public void searchReqController_suggestsOrganismName() throws Exception {
+        this.mockSearchReqController.perform(get(orgNameSuggPath).param("value","f")).andExpect(status().isOk())
+                .andExpect(content().string(containsString(testEntity1.getOrganismName())));
     }
 }

@@ -21,6 +21,12 @@ class InputArea extends Component {
         }
         this.setState({currentElementsData: currElemData});
     };
+    onPageSizeChanged = (newValue) => {
+        this.setState({pageSize: newValue});
+    };
+    onPageNoChanged = (newValue) => {
+        this.setState({pageNo: newValue - 1});
+    };
     removeFilter = (key) => {
         if (key == 0) {
             return;
@@ -56,7 +62,7 @@ class InputArea extends Component {
             filterCounter: 1, activeFilterElements:
                 [<Filter isFirst="true" listId={initialListId} onSelect={this.handleReferenceSelection}
                          onChange={this.handleValueChange} onClickDelete={(key) => this.removeFilter(key)} />],
-            currentElementsData: {0: InitialHelper.getInitialFilterData(initialListId)}
+            currentElementsData: {0: InitialHelper.getInitialFilterData(initialListId)}, pageSize: 5, pageNo: 0
         };
     }
 
@@ -65,8 +71,19 @@ class InputArea extends Component {
             <FilterList activeFilterElements={this.state.activeFilterElements} />
             <AddFilterButton onclick={this.addFilter} />
             <SearchButton
-                onclick={(e) => this.props.onSearchClicked(e, Object.values(this.state.currentElementsData))} />
-        </div>);
+                onclick={(e) => {
+                    let currData = Object.values(this.state.currentElementsData);
+                    currData.push({reference: "Page number", value: this.state.pageNo}, {reference: "Page size", value:
+                    this.state.pageSize}); //append paging data
+                    this.props.onSearchClicked(e, currData);
+                }} />
+                <div>
+                    Page number:
+                    <PageNo onChange={(e) => this.onPageNoChanged(e.target.value)} />
+                    Page size:
+                    <PageSize onChange={(e) => this.onPageSizeChanged(e.target.value)} />
+                </div>
+            </div>);
     }
 }
 
@@ -229,6 +246,26 @@ class SearchButton extends Component {
         return <button id="searchButton" onClick={this.props.onclick}>
             <b>0-Search!</b>
         </button>;
+    }
+}
+
+class PageSize extends Component {
+    render() {
+        return <select required={true} onChange={(e) => this.props.onChange(e)}>
+            <option>5</option>
+            <option>10</option>
+            <option>20</option>
+            <option>50</option>
+            <option>100</option>
+        </select>
+    }
+}
+
+
+class PageNo extends Component {
+    render() {
+        return <input type="number" onChange={(e) => this.props.onChange(e)}>
+        </input>
     }
 }
 

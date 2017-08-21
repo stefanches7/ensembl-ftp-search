@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * REST controller that accepts search requests and responds with the needed values.
+ * REST controller that accepts search requests and responds with the needed values (incl. suggestions searches).
  */
 @RestController
 @CrossOrigin
@@ -47,6 +47,7 @@ public class SearchRequestController {
         final LinkSpecificationsIntersector filtersIntersector = new LinkSpecificationsIntersector();
         final List<String> errorsList = new LinkedList<>();
         final List<TaxaSearchFilterContainer> taxaSearchFilterContainers = new LinkedList<>();
+        boolean isOrganismNameFilterSeen = true; //taxa filter adequacy flag
 
         for (final Map.Entry<String, String> filterEntry : paramMap.entrySet()) {
 
@@ -57,6 +58,7 @@ public class SearchRequestController {
 
             if ("taxaBranch".equals(camelCasifiedParam)) {
                 try {
+                    isOrganismNameFilterSeen = false; //prepare to check this taxa filter's compliancy
                     taxaSearchFilterContainers.add(new TaxaSearchFilterContainer(Integer.valueOf(filterEntry.getValue())));
                 } catch (final InvalidFilterException e) {
                     e.printStackTrace();
@@ -78,8 +80,6 @@ public class SearchRequestController {
         }
 
         Specification<Link> producedSpec = filtersIntersector.produce();
-
-        boolean isOrganismNameFilterSeen = false; //taxa filter adequacy flag
 
         for (final TaxaSearchFilterContainer filterContainer : taxaSearchFilterContainers) {
             //Unite all the organism name filters

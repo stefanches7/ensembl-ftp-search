@@ -7,4 +7,10 @@
           organism_name="Silvesternacht"
           file_type="fb"
           link_url="http://web.org/"/>
+    <organism_name_suggestion id="1"
+                              organism_name="facebookaddict"/>
+    <organism_name_suggestion id="2"
+                              organism_name="Silvesternacht" />
+    <file_type_suggestion id="1"
+                          file_type="fb"/>
 </dataset>
