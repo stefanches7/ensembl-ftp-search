@@ -1,13 +1,64 @@
-# Ensembl project FTP search API ![alt link](https://travis-ci.org/stefanches7/ensembl-ftp-search.svg?branch=master)
-Various end-user tools for searching the FTP sites of the Ensembl project.
+# Ensembl/Ensembl Genomes FTP search API ![alt link](https://travis-ci.org/stefanches7/ensembl-ftp-search.svg?branch=master)
+HTTP and JS interfaces for searching the FTP sites of Ensembl/Ensembl Genomes
 
-# HTTP interface
-Setup & requirements
---------------------
-Following software is required to run the server:
-* JDK1.8
-* MySQL
-* Gradle
+Summary
+-------
+This API is a comfortable way to get the links to the files needed from [Ensembl FTP site](ftp://ftp.ensembl.org) and 
+[EnsemblGenomes FTP site](ftp://ftp.ensemblgenomes.org). I.e., having entered e.g. organism release name/taxonomy branch 
+and data type you are interested in (say, "Sophophora" and "vep") you'll get all the file links to the files matching 
+your query (in this case all the links leading to "vep" files for all species that are Sophophora).
+
+Usage
+-----
+### HTTP interface
+
+API can be accessed through HTTP requests to the various endpoints:
+
+* `/hello` - "Hello World!" healthcheck
+* `/search` - the main end-point for searching.
+* `/organismNameSuggestion`/`/fileTypeSuggestion` - pattern search for distinct organism_names/file_types in the local 
+database (links to organism names and file types database).
+
+#### Searching
+
+`/search` endpoint provides the interface to search the database applying all the filters specified. As of now, it will 
+_intersect_ all the filters you have specified and return the _Java-like_ list of links that match your whole query (i.e.,
+list will look like [\<link1\>, \<link2\>...]).
+
+The available filters are:
+
+* `organismName` - organism _release_ name (lowercase, with underscores, e.g. "drosophila_melanogaster")
+* `fileType` - dataType, e.g. "vep" or "fasta_cdna" (fasta subtype after underscore)
+* `taxaBranch` - taxonomy _id_ (_number_) as of NCBI Taxonomy database (e.g. "Drosophila melanogaster" has id 7227)
+
+Please note that `page` and `size` parameters are available for *paging* (they should also be _numbers_)
+
+_Examples_: 
+
+`<ip>:<port>/search?taxaBranch=7227&file_type=vep&page=1&size=20` - vep files for Drosophila melanogaster, second page
+of 20 links (links 20-39 from the result)
+
+`curl <ip> <port> -d organism_name='drosophila_melanogaster' -d fileType='vep'` - same, but the whole result set this time
+
+### Javascript interface
+
+There is also a JS interface available, which acts merely like a step-between the HTTP interface and user to make searching
+the FTP sites even more comfortable. Some users may prefer JS iinterface over HTTP interface because of *value suggestions*
+using the OLS API of EMBL-EBI, what helps to get rid of many misspelling errors and mistakes. 
+Users can end unlimited amount of the same search filters that are used in the essential HTTP interface (i.e., "Organism
+name", "Taxonomy branch", "File type"), but are warned that not any taxonomy branch that is typed and even suggested is going
+to deliver any results - you will be however warned, if there are no organisms in the API database that correspond
+to the specified taxonomy branch.
+
+Paging is also available in the JS interface.
+
+## Setup & configuration
+###Requirements
+
+Following software is required to run the HTTP server:
+* *JDK1.8*
+* *MySQL*5.5+
+* *Gradle*
 
 Gradle can be automatically installed via Gradle Wrapper, that is:
 
@@ -22,73 +73,31 @@ ensembl-ftp-search> exec gradlew.bat
 
 ```
 
-Please refer to the Gradle documentation for more instructions.
+Javascript user interface was built using *React* libraries and is therefore dependent on *Node* and `npm`.
 
-Configuration
--------------
+Update job requires *Perl 5.24+* to run.
 
-All the important configuration values are specified in the `application.properties` file located in the src/main/resources folder.
+### Configuration
 
-Usage
-=====
-Starting the server
--------------------
-The application requires a running MySQL database to work with.
-Please refer to the `spring.datasource` group values in `src\main\resorces\application.properties` file
-to see and/or specify the database connection credentials.
+Spring Boot application is configured using `main/resources/application.properties` file in the Java sources root.
+Please _pay special attention_ to the `spring.datasource` group values, as they should point to *running and accessible
+MySQL database*. Without it, the application won't be able to start.
+Perl update job is configured passing the arguments through the command line.
 
-Since application is built with Spring boot framework, it's possible
-to start it with a simple gradle task:
+###Startup
 
-`gradle bootRun`
-
-However it's also possible to start it vanilla gradle core way:
-
+HTTP server is started with `gradle bootRun` command (optionally:
 ```sbtshell
-gradle build
-java -jar build/libs/ensembl-ftp-search-XXXXX.jar <options>
-```
+ gradle build
+ java -jar build/libs/ensembl-ftp-search-XXXXX.jar <options>
+ ``` 
+).
+JS webserver (standalone) is started with `npm start` _from the root directory_ (currently `web\src\js\search_webui`). 
+Perl update job is ran as a simple Perl script using UpdateSearchDB.pl as
+an entry point (i.e., `~$ perl UpdateSearchDB.pl <parameters>`).
 
-The server starts at `localhost:8080` by default, which, however, can be changed in `application.properties`.
+### Logging 
 
-HTTP requests
--------------
+HTTP server logs into the command line from which it was started. JS web-UI uses web console for logging. Perl update job
+will log in the command line. 
 
-API can be accessed through HTTP requests to the various endpoints:
-
-* `/search` - the end-point for searching, exact description down the page.
-* `/addNew` - adds organism to the specified database. Please note that this is a debug feature and will be removed on the release.
-* `/findAll` - sends all the database records in form of JSON objects. This feature is also debug.
-
-Searching
----------
-`/search` endpoint provides the interface to search the database applying all the filters specified. You are to specify the filters either in camelCase form or with_underscores_between_words, i.e. both `organismName` and `organism_name` are accepted. The API warns about the filters that were not applied (because they were invalid) in the HTTP response and intersects all the filters that were valid. 
-Your response contains all the links that are relevant to the specified search filters' combination.
-
-Right now the available filters are:
-
-* `organismName`
-* `fileType`
-
-_Examples_: 
-
-`<ip>:<port>/search?organismName=Bushbaby&file_type=.vep`
-
-`curl <ip> <port> -d organism_name='Bushbaby' -d fileType='.vep'`
-
-Add new
--------
-For adding new organism, please specify all the parameters: `link_url`, `file_type` and `organism_name`. Malformed URLs are not accepted.
-
-#Web User Interface
-Setup
------
-Dev mode is run through `npm start`. Please note that WebUI root is
-located at web/src/js/search-webui, hence you have to run `npm start`
-exactly from there.
-
-Configuration
--------------
-At the moment, there's no place to configure the app. Changeable bits
-of it's behavior, like the URL it connects to, are scattered around 
-the code.

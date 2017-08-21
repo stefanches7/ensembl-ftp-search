@@ -139,4 +139,10 @@ public class FtpSearchApiApplicationTests {
         this.mockSearchReqController.perform(get(orgNameSuggPath).param("value","f")).andExpect(status().isOk())
                 .andExpect(content().string(containsString(testEntity1.getOrganismName())));
     }
+
+    @Test
+    public void searchReqController_suggestsFileType() throws Exception {
+        this.mockSearchReqController.perform(get(fileTypeSuggPath).param("value","f")).andExpect(status().isOk())
+                .andExpect(content().string(containsString(testEntity1.getFileType())));
+    }
 }

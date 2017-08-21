@@ -43,7 +43,7 @@ sub parsefileinfos {
     }
     elsif ($fileurl =~ /\/vep\//i) {
         #variation file
-        $fileinfos{"organism_name"} = $1 if $fileurl =~ /\/vep\/(.*?)_vep_*/;
+        $fileinfos{"organism_name"} = $1 if $fileurl =~ /\/vep\/(?:.*?_collection\/)?(.*?)_vep_*/i;
         #parse the organism name straight out of filename, anything until "_vep_" prefix
         $fileinfos{"file_type"} = "vep";
     }

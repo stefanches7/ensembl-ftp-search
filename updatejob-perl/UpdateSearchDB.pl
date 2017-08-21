@@ -19,7 +19,7 @@ use feature qw/say/;
 
 # full-length urls
 # NB! Links are supposed to be leafs of current release endpoints (e.g. ftp.ensembl.org/pub/release-XX)!
-my @entrypoints = ("ftp.ensemblgenomes.org/pub/release-36/metazoa/");
+my @entrypoints = ("ftp://ftp.ensembl.org/pub/release-89/");
 
 # search database credentials
 my $searchdbdsn = "DBI:mysql:database=ensembl_api_test;host=localhost;port=3306";
