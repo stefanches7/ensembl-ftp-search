@@ -45,15 +45,7 @@ of 20 links (links 20-39 from the result)
 
 ### Javascript interface
 
-There is also a JS interface available, which acts merely like a step-between the HTTP interface and user to make searching
-the FTP sites even more comfortable. Some users may prefer JS iinterface over HTTP interface because of *value suggestions*
-using the OLS API of EMBL-EBI, what helps to get rid of many misspelling errors and mistakes. 
-Users can end unlimited amount of the same search filters that are used in the essential HTTP interface (i.e., "Organism
-name", "Taxonomy branch", "File type"), but are warned that not any taxonomy branch that is typed and even suggested is going
-to deliver any results - you will be however warned, if there are no organisms in the API database that correspond
-to the specified taxonomy branch.
-
-Paging is also available in the JS interface.
+There is also a JS interface available, see `web\src\js\search-webui`.
 
 ## Setup & configuration
 ### Requirements
@@ -85,7 +77,6 @@ Update job requires *Perl 5.24+* to run.
 Spring Boot application is configured using `main/resources/application.properties` file in the Java sources root *or* passing the command line arguments, e. g. `java -jar build/libs/ensembl-ftp-search-XXXXX.jar --server.port 9988`. See [Spring documentation] for a comprehensive list of Spring Boot options available.
 Please _pay special attention_ to the `spring.datasource` group values, as they should point to *running and accessible
 MySQL database*. Without it, the application won't be able to start.
-Perl update job is configured passing the arguments through the command line.
 
 [Spring documentation]: https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 
@@ -97,12 +88,7 @@ HTTP server is started with `gradle bootRun` command (optionally:
  java -jar build/libs/ensembl-ftp-search-XXXXX.jar <options>
  ``` 
 ).
-JS webserver (standalone) is started with `npm start` _from the root directory_ (currently `web\src\js\search_webui`). 
-Perl update job is ran as a simple Perl script using UpdateSearchDB.pl as
-an entry point (i.e., `~$ perl UpdateSearchDB.pl <parameters>`).
 
 ### Logging 
 
-HTTP server logs into the command line from which it was started. JS web-UI uses web console for logging. Perl update job
-will log in the command line. 
-
+HTTP server logs into the command line from which it was started.
