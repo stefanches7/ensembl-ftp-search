@@ -18,6 +18,8 @@ Job of updating the FTP search database. Parameters description:
 * entrypoint - entrypoint(s) to start recursive crawling from. Separate with comma ",".
 * entrypointsfile - file that contains crawling entrypoints either separated with comma or with newline. _Overwrites_
 entrypoints specified with the "entrypoint" parameter.
+* truncate - specify to rewrite the previous information in the database, otherwise the new information will be appended to the
+old one.
 
 =cut
 
@@ -27,6 +29,7 @@ use warnings FATAL => 'all';
 use FTPFilenameUtil;
 use FTPCrawler;
 use Getopt::Long;
+use LWP::Simple;
 use feature qw/say/;
 
 # full-length urls
@@ -81,7 +84,9 @@ if ($truncatetables) {
     $searchdbop->truncatetables();
 }
 
+WALKSTART:
 for my $entrypoint (@entrypoints) {
+    next WALKSTART if !head($entrypoint); #if link leads nowhere
     $entrypoint =~ s/\/$//; #remove trailing fwd slash in entrypoints
     if ($entrypoint =~ /($FTPFilenameUtil::ftpensembladdr|$FTPFilenameUtil::ftpensemblgenomesaddr)(.*)/i) {
         push @filelinks, FTPCrawler->initiate($1, $2, $searchdbop);

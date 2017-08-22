@@ -15,6 +15,7 @@ use SearchDBOperator;
 use FTPFilenameUtil;
 use Net::FTP;
 use Net::FTP::File;
+use LWP::Simple;
 use feature qw/say/;
 
 sub initiate {
@@ -29,7 +30,6 @@ sub initiate {
 sub walk {
     my $self = shift;
     my ($hostname, $entrypoint) = @_;
-    say "Walking " . $entrypoint;
     my $searchdbop = $self->{searchdbop};
     my $ftpclient = $self->{ftpclient};
     my @collectedlinks = ();

@@ -94,8 +94,10 @@ public class SearchRequestController {
             producedSpec = Specifications.where(producedSpec).and(unionSpec);
         }
         if (!isOrganismNameFilterSeen) {
-            errorsList.add("Taxa branch that you've specified doesn't contain any Ensembl organism. Therefore, this " +
-                    "filter was suspended.");
+            errorsList.add("(Taxonomy branch that you've specified doesn't contain any organism from our database. " +
+                    "Therefore " +
+                    "this " +
+                    "filter was suspended.)");
         }
         final List<String> linkUrlsList = new LinkedList<>();
 

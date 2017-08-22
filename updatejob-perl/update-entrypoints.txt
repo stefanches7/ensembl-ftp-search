@@ -1,2 +1,1 @@
-ftp://ftp.ensemblgenomes.org/pub/release-36/bacteria/
-ftp://ftp.ensemblgenomes.org/pub/release-36/protists/
+ftp://ftp.ensemblgenomes.org/pub/fungi/release-36/fasta/aspergillus_flavus/
