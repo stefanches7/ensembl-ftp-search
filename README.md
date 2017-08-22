@@ -3,10 +3,13 @@ HTTP and JS interfaces for searching the FTP sites of Ensembl/Ensembl Genomes
 
 Summary
 -------
-This API is a comfortable way to get the links to the files needed from [Ensembl FTP site](ftp://ftp.ensembl.org) and 
-[EnsemblGenomes FTP site](ftp://ftp.ensemblgenomes.org). I.e., having entered e.g. organism release name/taxonomy branch 
+This API is a comfortable way to get the links to the files needed from [Ensembl FTP site] and 
+[EnsemblGenomes FTP site]. I.e., having entered e.g. organism release name/taxonomy branch 
 and data type you are interested in (say, "Sophophora" and "vep") you'll get all the file links to the files matching 
 your query (in this case all the links leading to "vep" files for all species that are Sophophora).
+
+[Ensembl FTP site]: ftp.ensembl.org
+[EnsemblGenomes FTP site]: ftp.ensemblgenomes.org
 
 Usage
 -----
@@ -23,7 +26,7 @@ database (links to organism names and file types database).
 
 `/search` endpoint provides the interface to search the database applying all the filters specified. As of now, it will 
 _intersect_ all the filters you have specified and return the _Java-like_ list of links that match your whole query (i.e.,
-list will look like [\<link1\>, \<link2\>...]).
+list will look like \[\<link1\>, \<link2\>...\]).
 
 The available filters are:
 
@@ -79,10 +82,12 @@ Update job requires *Perl 5.24+* to run.
 
 ### Configuration
 
-Spring Boot application is configured using `main/resources/application.properties` file in the Java sources root *or* passing the command line arguments, e. g. `java -jar build/libs/ensembl-ftp-search-XXXXX.jar --server.port 9988`. See ![Spring documentation]https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html for a comprehensive list of Spring Boot options available.
+Spring Boot application is configured using `main/resources/application.properties` file in the Java sources root *or* passing the command line arguments, e. g. `java -jar build/libs/ensembl-ftp-search-XXXXX.jar --server.port 9988`. See [Spring documentation] for a comprehensive list of Spring Boot options available.
 Please _pay special attention_ to the `spring.datasource` group values, as they should point to *running and accessible
 MySQL database*. Without it, the application won't be able to start.
 Perl update job is configured passing the arguments through the command line.
+
+[Spring documentation]: https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 
 ### Startup
 
