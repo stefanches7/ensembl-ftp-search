@@ -53,14 +53,14 @@ to the specified taxonomy branch.
 Paging is also available in the JS interface.
 
 ## Setup & configuration
-###Requirements
+### Requirements
 
 Following software is required to run the HTTP server:
 * *JDK1.8*
 * *MySQL*5.5+
-* *Gradle*
+* *Gradle* \*
 
-Gradle can be automatically installed via Gradle Wrapper, that is:
+\* Gradle can be automatically installed via Gradle Wrapper, that is:
 
 Linux: 
 ```bash
@@ -79,12 +79,12 @@ Update job requires *Perl 5.24+* to run.
 
 ### Configuration
 
-Spring Boot application is configured using `main/resources/application.properties` file in the Java sources root.
+Spring Boot application is configured using `main/resources/application.properties` file in the Java sources root *or* passing the command line arguments, e. g. `java -jar build/libs/ensembl-ftp-search-XXXXX.jar --server.port 9988`. See ![Spring documentation]https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html for a comprehensive list of Spring Boot options available.
 Please _pay special attention_ to the `spring.datasource` group values, as they should point to *running and accessible
 MySQL database*. Without it, the application won't be able to start.
 Perl update job is configured passing the arguments through the command line.
 
-###Startup
+### Startup
 
 HTTP server is started with `gradle bootRun` command (optionally:
 ```sbtshell
