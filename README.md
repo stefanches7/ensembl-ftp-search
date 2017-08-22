@@ -34,7 +34,7 @@ The available filters are:
 * `fileType` - dataType, e.g. "vep" or "fasta_cdna" (fasta subtype after underscore)
 * `taxaBranch` - taxonomy _id_ (_number_) as of NCBI Taxonomy database (e.g. "Drosophila melanogaster" has id 7227)
 
-Please note that `page` and `size` parameters are available for *paging* (they should also be _numbers_)
+Please note that `page` and `size` parameters are available for **paging** (they should also be _numbers_)
 
 _Examples_: 
 
@@ -51,8 +51,8 @@ There is also a JS interface available, see `web\src\js\search-webui`.
 ### Requirements
 
 Following software is required to run the HTTP server:
-* *JDK1.8*
-* *MySQL*5.5+
+* **JDK1.8**
+* **MySQL**5.5+
 * *Gradle* \*
 
 \* Gradle can be automatically installed via Gradle Wrapper, that is:
@@ -68,15 +68,15 @@ ensembl-ftp-search> exec gradlew.bat
 
 ```
 
-Javascript user interface was built using *React* libraries and is therefore dependent on *Node* and `npm`.
+Javascript user interface was built using *React* libraries and is therefore dependent on **Node** and `npm`.
 
 Update job requires *Perl 5.24+* to run.
 
 ### Configuration
 
-Spring Boot application is configured using `main/resources/application.properties` file in the Java sources root *or* passing the command line arguments, e. g. `java -jar build/libs/ensembl-ftp-search-XXXXX.jar --server.port 9988`. See [Spring documentation] for a comprehensive list of Spring Boot options available.
-Please _pay special attention_ to the `spring.datasource` group values, as they should point to *running and accessible
-MySQL database*. Without it, the application won't be able to start.
+Spring Boot application is configured using `main/resources/application.properties` file in the Java sources root **or** passing the command line arguments, e. g. `java -jar build/libs/ensembl-ftp-search-XXXXX.jar --server.port 9988`. See [Spring documentation] for a comprehensive list of Spring Boot options available.
+Please _pay special attention_ to the `spring.datasource` group values, as they should point to **running and accessible
+MySQL database**. Without it, the application won't be able to start.
 
 [Spring documentation]: https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 
