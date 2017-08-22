@@ -34,3 +34,5 @@ linksupdate.iml
 /updatejob-perl/updatejob-perl.iml
 
 _Deparsed_XSubs.pm
+
+node_modules
