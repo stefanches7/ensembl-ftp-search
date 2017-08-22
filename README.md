@@ -82,8 +82,7 @@ MySQL database**. Without it, the application won't be able to start.
 
 ### Startup
 
-HTTP server is started with `./gradlew bootRun` command (don't worry about having Gradle already installed, Gradle Wrapper
-won't download any other version then).
+HTTP server is started with `./gradlew bootRun` (or `gradle bootRun` if you already have Gradle) command.
 
 ### Logging 
 
