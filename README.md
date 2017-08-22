@@ -82,12 +82,8 @@ MySQL database**. Without it, the application won't be able to start.
 
 ### Startup
 
-HTTP server is started with `gradle bootRun` command (optionally:
-```sbtshell
- gradle build
- java -jar build/libs/ensembl-ftp-search-XXXXX.jar <options>
- ``` 
-).
+HTTP server is started with `./gradlew bootRun` command (don't worry about having Gradle already installed, Gradle Wrapper
+won't download any other version then).
 
 ### Logging 
 
