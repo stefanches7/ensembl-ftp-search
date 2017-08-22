@@ -1,0 +1,2 @@
+ftp://ftp.ensemblgenomes.org/pub/release-36/bacteria/
+ftp://ftp.ensemblgenomes.org/pub/release-36/protists/

@@ -22,7 +22,6 @@ sub initiate {
     my ($hostname, $entrypoint, $searchdbop) = @_;
     my $ftp = Net::FTP->new($hostname) or die "Cannot connect to host {$hostname}";
     $ftp->login or die "Unable to login to the FTP site with blank credentials!";
-    $searchdbop->truncatelinktable();
     my $self = bless { ftpclient => $ftp, searchdbop => $searchdbop }, $class;
     return $self->walk($hostname, $entrypoint);
 }

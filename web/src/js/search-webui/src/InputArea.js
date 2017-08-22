@@ -349,7 +349,7 @@ class PageSize extends Component {
  */
 class PageNo extends Component {
     render() {
-        return <input type="number" onChange={(e) => this.props.onChange(e)}>
+        return <input onChange={(e) => this.props.onChange(e)}>
         </input>
     }
 }

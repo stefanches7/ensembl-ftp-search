@@ -115,7 +115,7 @@ export class SearchHelper {
      * @param failureCallback called on request's failure
      */
     static asyncSearchGet(searchQuery, successCallback, failureCallback) {
-        const url = appconfig.httpSearchInterfaceUrl + appconfig.httpSISearchEndp + searchQuery;
+        const url = appconfig.httpSearchInterfaceUrl + appconfig.httpSISearchEndp + "?" + searchQuery;
         console.debug("Search query was " + searchQuery);
         let req = SearchHelper.createCORSRequest('GET', url);
         if (!req) {

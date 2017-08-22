@@ -30,12 +30,15 @@ sub new {
     return $self;
 }
 
-sub truncatelinktable {
+sub truncatetables {
     my $self = shift;
-    my $tablename = shift;
     my $searchdbh = $self->{dbh};
     my $truncatesth = $searchdbh->prepare('TRUNCATE TABLE link;');
-    $truncatesth->execute();
+    $truncatesth->execute;
+    $truncatesth = $searchdbh->prepare('TRUNCATE TABLE organism_name_suggestion;');
+    $truncatesth->execute;
+    $truncatesth = $searchdbh->prepare('TRUNCATE TABLE file_type_suggestion;');
+    $truncatesth->execute;
     $truncatesth->finish();
 }
 

@@ -9,7 +9,8 @@ my %infoshash = FTPFilenameUtil->parsefileinfos($ensemblftpsitefileurl);
 
 =head1 DESCRIPTION
 
-Used to get information about a file on Ensembl site looking at its URL.
+Used to get information about a file on Ensembl site looking at its URL. Also contains useful public values like white-
+and blacklist FTP filename regex and servers' addresses.
 
 =cut
 
@@ -22,7 +23,7 @@ our $ftpensembladdr = "ftp.ensembl.org";
 our $ftpensemblgenomesaddr = "ftp.ensemblgenomes.org";
 
 # This regex is being ignored once seen by the crawler. Recursive crawling stops as well.
-our @voidedregex = ("CHECKSUM", "README", "\/mysql\/", ".ova", "species_", "uniprot_", "web_","\/xml\/", "\/bamcov\/",
+our @voidedregex = ("CHECKSUM", "README", "\/mysql\/", ".ova", "species_", "_genomes.txt", "uniprot_", "web_","\/xml\/", "\/bamcov\/",
     "\/bed\/","\/blat\/","\/compara\/","\/data_files\/","\/emf\/","\/maf\/","\/ncbi_blast\/","\/regulation\/","\/solr_srch\/",
     "\/assembly_chain\/assembly_chain");#FIXME remove ftp.ensembl.org/assembly_chain/assembly_chain file leading to nowhere
 # "Normal" datatypes which share the same directory structure. fasta and vep formats are handled separately.
