@@ -15,6 +15,7 @@ to the specified taxonomy branch. In this interface paging is also available.
 `config.js` contains the most important values needed to run the application.
 
 ## Start & access
+**ES6 language capabilities are required to successfully compile the application**. This could be achieved e.g. using _Node 6+_.
 JS webserver (standalone) is started with `npm start` _from the root directory_ (currently `web\src\js\search_webui`). **Please note** that this application is written using the newest Javascript language standards and it is therefore _highly recommended to update your user-agent_ to the newest version possible before accessing the application.
 
 ### Logging
