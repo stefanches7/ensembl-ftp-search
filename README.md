@@ -45,7 +45,11 @@ of 20 links (links 20-39 from the result)
 
 ### Javascript interface
 
-There is also a JS interface available, see `web\src\js\search-webui`.
+More user-friendly JS interface is available, see `web\src\js\search-webui`.
+
+### Update job
+
+Data indices, which are used by HTTP interface to provide search and suggestion functionality, are updated through Perl update job. Source code is to find in the `updatejob-perl` directory.
 
 ## Setup & configuration
 ### Requirements
