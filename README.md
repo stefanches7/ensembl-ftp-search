@@ -14,7 +14,7 @@ your query (in this case all the links leading to "vep" files for all species th
 Credits
 -------
 
-The development of this API was started during [Google Summer of Code] program. [Ensembl]/EG development team, being a part of European Bioinformatics Institute, accepted the student, Stefan Dvoretskii (author of this repository), to start and develop this project under the mentorship of [Dan Staines] for the best of global Bioinformatics community. The repository author pays many thanks and appreciation to his mentor and Ensembl/EBI community for the great work together and Google Summer of Code community and orgs for making this collaboration technically possible.
+The development of this API was started during [Google Summer of Code] program. [Ensembl]/[EG] development team, being a part of European Bioinformatics Institute, accepted the student, Stefan Dvoretskii (author of this repository), to start and develop this project under the mentorship of [Dan Staines] for the best of global Bioinformatics community. The repository author pays many thanks and appreciation to his mentor and Ensembl/EBI community for the great work together and Google Summer of Code community and orgs for making this collaboration technically possible.
 
 [Dan Staines]: https://www.ebi.ac.uk/about/people/dan-staines
 [Google Summer of Code]: https://summerofcode.withgoogle.com/
